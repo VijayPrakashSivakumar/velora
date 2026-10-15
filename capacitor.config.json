@@ -2,7 +2,18 @@
   "appId": "app.velora.assistant",
   "appName": "Velora",
   "webDir": "www",
+  "backgroundColor": "#100d1a",
+  "android": {
+    "allowMixedContent": false
+  },
   "plugins": {
-    "LocalNotifications": { "iconColor": "#6A46F0" }
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_icon",
+      "iconColor": "#6A46F0",
+      "sound": "default"
+    },
+    "SpeechRecognition": {
+      "popup": false
+    }
   }
 }

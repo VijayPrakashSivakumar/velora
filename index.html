@@ -3,11 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Velora</title>
+<title>Velora — Voice-first personal assistant</title>
+<meta name="description" content="Velora is a voice-first personal automation assistant for your phone. Tasks, reminders, focus timer and automations — private, offline-first.">
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#6a46f0">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="theme-color" content="#6a46f0" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#100d1a" media="(prefers-color-scheme: dark)">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Velora">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
 :root{color-scheme:light dark;--bg:#f5f2f8;--card:#fff;--ink:#1f1830;--mute:#7a7090;--line:#e6e0ef;--acc:#6a46f0;--on:#fff;--accsoft:#ece6ff;--gold:#b98a2f;--ok:#2a8a64;--warn:#c2410c;--sh:0 10px 34px rgba(70,40,150,.08);
@@ -96,6 +103,9 @@ h2{font-size:14px;margin:26px 0 8px;font-weight:800;color:var(--mute)}
 .st-ok{color:var(--ok)}.st-err{color:var(--warn)}
 input[type=time],.wf select{height:44px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:0 10px;font:600 15px Manrope,sans-serif}
 #toast{position:fixed;left:50%;bottom:calc(110px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:16px;font-size:14px;font-weight:600;max-width:88%;opacity:0;pointer-events:none;transition:opacity .2s;z-index:20}#toast.show{opacity:1}
+.install{margin:12px 0 0;display:flex;gap:10px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:12px 14px;box-shadow:var(--sh);font-size:14px}
+.install b{display:block;font-size:14px}.install span{color:var(--mute);font-size:12px}
+.install button{margin-left:auto;flex:none;min-height:44px;padding:0 16px;border-radius:22px;border:0;background:var(--acc);color:var(--on);font:800 14px Manrope,sans-serif;cursor:pointer}
 button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
 </style>
 </head>
@@ -107,6 +117,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
  </header>
  <h1 class="greet" id="hi">Good day</h1>
  <div class="sub" id="date"></div>
+ <div class="install" id="install" hidden><div><b>Install Velora on this phone</b><span>Home-screen icon, full screen, works offline.</span></div><button id="installBtn" type="button">Install</button></div>
  <div class="acts" style="margin-top:10px"><button class="speed" id="alerts"></button><button class="speed" id="autoBtn"></button></div>
  <p class="brief" id="brief"></p>
  <div id="pend"></div>
@@ -168,9 +179,9 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 <div id="toast" role="status"></div>
 <section class="ov" id="ov" aria-label="Velora assistant">
  <div class="top"><select id="lang" aria-label="Speech language">
-  <option value="">Voice: device language</option><option value="en-US">English (US)</option><option value="en-GB">English (UK)</option><option value="hi-IN">हिन्दी</option><option value="ur-PK">اردو</option><option value="ar-SA">العربية</option><option value="es-ES">Español</option><option value="fr-FR">Français</option><option value="de-DE">Deutsch</option><option value="pt-BR">Português</option></select>
+  <option value="">Voice: device language</option><option value="en-US">English (US)</option><option value="en-IN">English (India)</option><option value="en-GB">English (UK)</option><option value="ta-IN">தமிழ் (Tamil)</option><option value="ml-IN">മലയാളം (Malayalam)</option></select>
   <button class="close" id="close">Done</button></div>
- <div class="hint" id="lh" hidden>Speech is recognised in this language. Commands are understood in English for now.</div>
+ <div class="hint" id="lh" hidden>Speech is recognised in English, Tamil or Malayalam. Commands are understood in English for now.</div>
  <div id="chat" aria-live="polite"></div>
  <div class="ctl">
   <div id="tr"></div>
@@ -182,10 +193,57 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 
 <script>
 const K='vl.items.v1',S='vl.set.v1',$=id=>document.getElementById(id);
-const load=(k,f)=>{try{return JSON.parse(localStorage.getItem(k))||f}catch(e){return f}};
+const load=(k,f)=>{try{const v=JSON.parse(localStorage.getItem(k));return v==null?f:v}catch(e){return f}};
 let items=load(K,null)||load('pa.items.v1',[]),set=load(S,{lang:''}),view='upcoming',pending=null,rec=null,errMsg='';
 let nidc=0;const newNid=()=>Date.now()%2e9+(nidc++);items.forEach(i=>{if(!i.nid)i.nid=newNid()});
-const persist=()=>{try{localStorage.setItem(K,JSON.stringify(items));localStorage.setItem(S,JSON.stringify(set))}catch(e){toast('Storage is full. Export a backup and delete old photos.')}};
+let quotaNoteShown=false;
+/* Photo storage guard: images are the #1 quota killer (base64 in localStorage).
+   On quota failure: compress old photo notes, then retry, then drop oldest. */
+const IMG_BYTES=s=>s&&s.img?Math.round(s.img.length*0.75):0;
+const persistRaw=()=>{localStorage.setItem(K,JSON.stringify(items));localStorage.setItem(S,JSON.stringify(set))};
+function shrinkDataUrl(url,maxDim,quality){
+ return new Promise(res=>{
+  try{
+   const im=new Image();
+   im.onload=()=>{try{const s=Math.min(1,maxDim/Math.max(im.width||1,im.height||1));if(s>=1&&quality>=0.6){res(url);return}const c=document.createElement('canvas');c.width=Math.max(1,Math.round(im.width*s));c.height=Math.max(1,Math.round(im.height*s));c.getContext('2d').drawImage(im,0,0,c.width,c.height);res(c.toDataURL('image/jpeg',quality))}catch(e){res(url)}};
+   im.onerror=()=>res(url);im.src=url;
+  }catch(e){res(url)}
+ });
+}
+async function autoCleanupPhotos(){
+ let freed=0;
+ const olds=items.filter(i=>i.img&&!i.done).sort((a,b)=>(a.created||0)-(b.created||0));
+ for(const it of olds.slice(0,6)){
+  const before=IMG_BYTES(it);
+  it.img=await shrinkDataUrl(it.img,480,0.5);
+  freed+=Math.max(0,before-IMG_BYTES(it));
+  try{persistRaw();return{ok:true,freed,note:'Compressed older photo notes to free space.'}}catch(e){}
+ }
+ const donePhotos=items.filter(i=>i.img&&i.done).sort((a,b)=>(a.created||0)-(b.created||0));
+ for(const it of donePhotos.slice(0,10)){
+  freed+=IMG_BYTES(it);it.img=null;
+  try{persistRaw();return{ok:true,freed,note:'Removed photos from completed notes to free space.'}}catch(e){}
+ }
+ return{ok:false,freed};
+}
+let persistBusy=false,persistQueued=false;
+const persist=()=>{
+ if(persistBusy){persistQueued=true;return}
+ persistBusy=true;
+ try{persistRaw()}
+ catch(e){
+  persistBusy=false;
+  autoCleanupPhotos().then(r=>{
+   if(r.ok){toast('Storage was full. '+r.note);try{persistRaw()}catch(e2){quotaFullMsg()}render()}
+   else quotaFullMsg();
+   if(persistQueued){persistQueued=false;persist()}
+  });
+  return;
+ }
+ persistBusy=false;
+ if(persistQueued){persistQueued=false;persist()}
+};
+const quotaFullMsg=()=>{if(!quotaNoteShown){quotaNoteShown=true;toast('Storage is full. Export a backup, then delete old photo notes or clear completed items.')}else toast('Storage is still full. Delete an old photo note and try again.')};
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const dayStart=d=>{d=new Date(d);d.setHours(0,0,0,0);return d};
 const tomorrow=()=>new Date(dayStart(new Date()).getTime()+864e5);
@@ -211,8 +269,8 @@ function when(l){
  const now=new Date();let day=null,time=null,m=l.match(/\bin (half an?|\d+|an?)\s*(minute|min|hour|hr)s?\b/);
  if(m){const n=m[1].startsWith('half')?.5:m[1][0]==='a'?1:+m[1];return{rel:new Date(now.getTime()+n*(/^h/.test(m[2])?36e5:6e4))}}
  const d=dayStart(now);
- if(/\btomorrow\b/.test(l)){d.setDate(d.getDate()+1);day=d}
- else if(/\b(today|tonight|this (morning|afternoon|evening))\b/.test(l))day=d;
+ if(/\btomorrow\b|நாளை|നാളെ/.test(l)){d.setDate(d.getDate()+1);day=d}
+ else if(/\b(today|tonight|this (morning|afternoon|evening))\b|இன்று|ഇന്ന്/.test(l))day=d;
  else{const i=DAYS.findIndex(x=>new RegExp('\\b'+x+'\\b').test(l));if(i>=0){d.setDate(d.getDate()+((i-now.getDay()+7)%7||7));day=d}}
  m=l.match(/\b(\d{1,2})(?::(\d{2}))?\s*(am|pm)\b/)||l.match(/\bat (\d{1,2})(?::(\d{2}))?\b()/);
  if(m){let h=+m[1];if(m[3]==='pm'&&h<12)h+=12;if(m[3]==='am'&&h===12)h=0;if(!m[3]&&h<7)h+=12;if(h<24)time=[h,+(m[2]||0)]}
@@ -233,7 +291,7 @@ const strip=s=>s.replace(/\bevery ?(?:day|weekday|week|month|morning|afternoon|e
  .replace(/\b(on |by )?(monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b/ig,'').replace(/\b(at )?\d{1,2}(:\d{2})?\s*(am|pm)\b/ig,'')
  .replace(/\bat \d{1,2}(:\d{2})?\b/ig,'').replace(/\bin (half an?|\d+|an?)\s*(minute|min|hour|hr)s?\b/ig,'').replace(/\s+(at|on|by|for|in)\s*$/i,'').replace(/\s{2,}/g,' ').trim();
 const STOP=new Set(['the','and','for','about','related','everything','all','with','from','that','this','what','have']);
-const toks=q=>q.toLowerCase().split(/\W+/).filter(w=>w.length>2&&!STOP.has(w));
+const toks=q=>String(q||'').toLowerCase().split(/[\s,.;:!?()\[\]{}"'“”‘’|/\\\-_]+/u).map(w=>w.replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu,'')).filter(w=>w&&(w.length>2||/[஀-௿ഀ-ൿ]/.test(w))&&!STOP.has(w));
 const score=(i,t)=>t.reduce((n,w)=>n+(i.text.toLowerCase().includes(w)?1:0),0);
 function matchOne(q,pool){const t=toks(q);if(!t.length)return null;let b=null,bs=0;pool.forEach(i=>{const s=score(i,t);if(s>bs){bs=s;b=i}});return b}
 
@@ -258,6 +316,8 @@ function handle(raw){
 }
 function route(raw,l){
  let m;
+ if(/இன்றைய நாளை திட்டமிடு|என் நாளை திட்டமிடு|நாளை திட்டமிடு|என்னுடைய நாளை|എന്നെ ഇന്ന് പ്ലാൻ|എന്റെ ദിവസം പ്ലാൻ|ഇന്ന് പ്ലാൻ|ദിവസം ആസൂത്രണം/.test(raw))return planDay();
+ if(/சுருக்கம்|இன்று நான் என்ன செய்தேன்|സംഗ്രഹം|ഇന്ന് ഞാൻ എന്തു ചെയ്തു/.test(raw))return summary();
  if(/\bplan (my )?(entire |whole )?day\b|\bplan today\b/.test(l))return planDay();
  if(/what can you (handle|do)|what.*automatically/.test(l))return caps();
  if(/summary|what did i (do|finish|complete)|wrap up my day/.test(l))return summary();
@@ -277,15 +337,15 @@ function route(raw,l){
   const w=matchWf(m[2]);if(!w)return say(`I couldn't find an automation like “${esc(m[2])}”.`);
   w.enabled=m[1]==='on';w.next=w.enabled?nextAt(w):null;wfSchedule(w);persistWF();renderPend();renderAuto();return say(`${esc(w.name)} is now <b>${m[1]}</b>.`);
  }
- if(/^(find|search|show me|look for)\b/.test(l))return find(l);
+ if(/^(find|search|show me|look for)\b/.test(l)||/^(தேடு|தேடிக் கொடு|തിരയൂ|തിരഞ്ഞു തരൂ)\b/.test(raw.trim()))return find(raw);
  startCreate(raw);
 }
 function startCreate(raw){
- const l=raw.toLowerCase(),isRem=/^(please )?(remind|set a reminder|reminder)/.test(l),w=when(l),r=rep(l);if(r&&!w.day&&!w.rel&&!w.time)w.day=dayStart(new Date());const c=compose(w);
+ const l=raw.toLowerCase(),isRem=/^(please )?(remind|set a reminder|reminder)/.test(l)||/ஞாபகப்படுத்து|நினைவூட்டு|ஞாபகம்|ഓർമ്മിപ്പിക്കൂ|ഓർമ്മപ്പെടുത്തൂ|ഓർമ്മ/.test(raw),w=when(l),r=rep(l);if(r&&!w.day&&!w.rel&&!w.time)w.day=dayStart(new Date());const c=compose(w);
  let type='note';
  if(/\b(idea|what if|brainstorm)\b/.test(l))type='idea';
- else if(isRem||c||/^(call|email|text|buy|pay|book|send|schedule|finish|submit|review|prepare|fix|clean|pick up|follow up|ask)\b/.test(l)||/\b(need to|have to|must|todo|to do)\b/.test(l))type='task';
- let text=raw.replace(/^(please\s+)?(remind me to|remind me|set a reminder to|reminder to|add (a )?task( to)?|create (a )?(task|note|idea)( (from|about|for) (this|that))?( to)?|note( that)?|task:?)\s*/i,'');
+ else if(isRem||c||/^(call|email|text|buy|pay|book|send|schedule|finish|submit|review|prepare|fix|clean|pick up|follow up|ask)\b/.test(l)||/\b(need to|have to|must|todo|to do)\b/.test(l)||/^(சேர்|சேரு|சேர்த்து|ചേർക്കൂ|ചേർക്കു|ചേർക്കണ)/.test(raw.trim()))type='task';
+ let text=raw.replace(/^(please\s+)?(remind me to|remind me|set a reminder to|reminder to|add (a )?task( to)?|create (a )?(task|note|idea)( (from|about|for) (this|that))?( to)?|note( that)?|task:?)\s*/i,'').replace(/^(ஞாபகப்படுத்து|நினைவூட்டு|சேர்|சேரு|சேர்த்துக்கோ|ഓർമ്മിപ്പിക്കൂ|ഓർമ്മപ്പെടുത്തൂ|ചേർക്കൂ|ചേർക്കണ)\s+/,'');
  if(c)text=strip(text);
  const d={text:cap(text||raw),type,rem:isRem,w,rep:c?r:null,due:c?c.due:null,allDay:c?c.allDay:false};
  if(isRem&&!w.rel&&!w.day&&!w.time){pending={t:'when',d};return say(`When should I remind you to <b>${esc(d.text)}</b>?`,chips(['Tonight','Tomorrow morning','Tomorrow at 9 AM','In 1 hour']))}
@@ -323,9 +383,10 @@ function prioritize(){
  say('<b>Your order, most urgent first</b>'+o.map(i=>li(isLate(i)?'Overdue':i.due?fmtDay(i.due):'No date',i.text)).join('')+'<div class="meta">I sort by due date automatically, so nothing needs changing.</div>');
 }
 function find(l){
- const q=l.replace(/^(find|search( for)?|show me|look for)\s+/,'').replace(/^(everything|all)\s+/,'').replace(/^(related to|about|for|on)\s+/,'').replace(/^(my|the)\s+/,'');
- const t=toks(q);if(!t.length)return say('What should I look for?');
- const r=items.map(i=>[score(i,t),i]).filter(x=>x[0]).sort((a,b)=>b[0]-a[0]).slice(0,6);
+ const q=String(l).replace(/^(find|search( for)?|show me|look for)\s+/i,'').replace(/^(தேடு|தேடிக் கொடு|തിരയൂ|തിരഞ്ഞു തരൂ)\s+/,'').replace(/^(everything|all)\s+/,'').replace(/^(related to|about|for|on)\s+/,'').replace(/^(my|the)\s+/,'');
+ const t=toks(q);if(!t.length&&!/[஀-௿ഀ-ൿ]/.test(q))return say('What should I look for?');
+ const t2=t.length?t:[q.trim()].filter(Boolean);
+ const r=items.map(i=>[score(i,t2.length?t2:[q.toLowerCase()]),i]).filter(x=>x[0]).sort((a,b)=>b[0]-a[0]).slice(0,6);
  say(r.length?`<b>${r.length} found for “${esc(q)}”</b>`+r.map(([,i])=>li(i.type==='task'?(i.done?'Done':i.due?fmtDay(i.due):'Task'):cap(i.type),i.text)).join(''):`Nothing saved matches “${esc(q)}”.`);
 }
 function summary(){
@@ -586,7 +647,26 @@ const dstr=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
 let focusLog=load('vl.focus.v1',[]),editId=null,fx=null;
 const focusMin=since=>focusLog.filter(f=>f.t>=+new Date(since)).reduce((a,f)=>a+f.m,0);
 if(set.theme)document.documentElement.dataset.theme=set.theme;
-if('serviceWorker' in navigator&&location.protocol==='https:'&&!NATIVE){try{navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}}
+let deferredInstall=null;
+function installUI(){
+ try{
+  if(NATIVE)return;
+  if(matchMedia('(display-mode: standalone)').matches||navigator.standalone)return;
+  if(localStorage.getItem('vl.install.hide'))return;
+  if(deferredInstall){$('install').hidden=false}
+ }catch(e){}
+}
+addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;installUI()});
+$('installBtn').onclick=async()=>{
+ if(!deferredInstall){try{localStorage.setItem('vl.install.hide','1')}catch(e){}$('install').hidden=true;toast('Use the browser menu > Install app (or Add to Home screen).');return}
+ deferredInstall.prompt();
+ try{await deferredInstall.userChoice}catch(e){}
+ try{localStorage.setItem('vl.install.hide','1')}catch(e){}
+ deferredInstall=null;$('install').hidden=true;
+};
+if('serviceWorker' in navigator&&location.protocol==='https:'&&!NATIVE){try{navigator.serviceWorker.register('sw.js').then(r=>{try{r.update()}catch(e){}if(r)r.onupdatefound=()=>{const n=r.installing;if(n)n.onstatechange=()=>{if(n.state==='installed'&&navigator.serviceWorker.controller)toast('Velora updated. Reload to use the new version.')}}}).catch(()=>{})}catch(e){}}
+addEventListener('appinstalled',()=>{try{localStorage.setItem('vl.install.hide','1')}catch(e){}const b=$('install');if(b)b.hidden=true;toast('Velora installed. Find it on your home screen.')});
+installUI();
 function webNotify(title,body){
  try{
   const r=navigator.serviceWorker&&navigator.serviceWorker.getRegistration?navigator.serviceWorker.getRegistration():Promise.resolve(null);
@@ -604,11 +684,15 @@ function shareIn(){
  const q=new URLSearchParams(location.search),s=[q.get('title'),q.get('text'),q.get('url')].filter(Boolean).join(' ').trim();
  const act=q.get('a');
  if(act){try{history.replaceState(null,'',location.pathname)}catch(e){}
-  if(act==='add')$('in').focus();
+  if(act==='add'||act==='quickadd')openQuickAdd();
   else if(act==='week'){view='week';setTabs();render()}
   else if(act==='focus'){const t=open().sort(rank)[0];if(t)startFocus(t.id);else toast('No open task to focus on')}}
  if(q.get('voice')||s){try{history.replaceState(null,'',location.pathname)}catch(e){}openAI();if(s)setTimeout(()=>handle(s),250)}
 }
+/* Widget + shortcut quick-add: focus the dock input so one tap starts typing. */
+function openQuickAdd(){try{$('in').focus({preventScroll:false})}catch(e){try{$('in').focus()}catch(e2){}}$('in').scrollIntoView({block:'center',behavior:'smooth'});toast('Type it — Enter saves instantly.')}
+/* Mirror shareIn for NATIVE quick-add intents delivered after first render. */
+addEventListener('velora-quickadd',openQuickAdd);
 function weekHTML(){
  const t0=dayStart(new Date()).getTime(),o=open().sort(rank);let h='';
  for(let k=0;k<7;k++){
@@ -749,6 +833,11 @@ $('theme').onchange=()=>{set.theme=$('theme').value;if(set.theme)document.docume
 /* ---------- Voice ---------- */
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
 const NSR=NATIVE?Capacitor.Plugins.SpeechRecognition:null;
+const VOICE_LANGS=['en-US','en-IN','en-GB','ta-IN','ml-IN'];
+const hasTamil=s=>/[\u0B80-\u0BFF]/.test(s||'');
+const hasMalayalam=s=>/[\u0D00-\u0D7F]/.test(s||'');
+const detectScriptLang=s=>hasTamil(s)?'ta-IN':hasMalayalam(s)?'ml-IN':'';
+function voiceLang(){const s=set.lang||'';if(VOICE_LANGS.includes(s))return s;const nav=navigator.language||'en-US';return VOICE_LANGS.includes(nav)?nav:'en-US'}
 async function listenNative(){
  if(rec){try{await NSR.stop()}catch(e){}return}
  try{
@@ -767,14 +856,14 @@ async function listenNative(){
   await NSR.removeAllListeners();
   NSR.addListener('partialResults',d=>{got=(d.matches&&d.matches[0])||got;$('tr').textContent=got});
   NSR.addListener('listeningState',d=>{if(d.status==='stopped')fin()});
-  await NSR.start({language:set.lang||navigator.language||'en-US',maxResults:1,partialResults:true,popup:false});
+  await NSR.start({language:voiceLang(),maxResults:1,partialResults:true,popup:false});
  }catch(e){errMsg='x';st('Voice failed. Type below.');fin()}
 }
 function listen(){
  if(NATIVE&&NSR)return listenNative();
  if(!SR){st('Voice is not supported in this browser. Type below.');return}
  if(rec){rec.stop();return}
- let got='';errMsg='';rec=new SR();rec.lang=set.lang||navigator.language||'en-US';rec.interimResults=true;
+ let got='';errMsg='';rec=new SR();rec.lang=voiceLang();rec.interimResults=true;
  rec.onstart=()=>{orb('listen');st('Listening… tap to finish')};
  rec.onresult=e=>{got=[...e.results].map(r=>r[0].transcript).join(' ');$('tr').textContent=got};
  rec.onerror=e=>{errMsg=e.error==='not-allowed'?'Microphone is blocked. Allow it in browser settings or type below.':e.error==='network'?'Speech needs internet in this browser. Type below while offline.':e.error==='no-speech'?'I didn’t hear anything. Tap and try again.':'Voice failed. Type below.';st(errMsg)};
@@ -790,9 +879,13 @@ $('omic').onclick=listen;
 $('close').onclick=()=>{if(rec)rec.stop();$('ov').classList.remove('show')};
 $('in').addEventListener('keydown',e=>{if(e.key==='Enter'&&$('in').value.trim()){const v=$('in').value;$('in').value='';openAI();handle(v)}});
 $('tin').addEventListener('keydown',e=>{if(e.key==='Enter'&&$('tin').value.trim()){const v=$('tin').value;$('tin').value='';handle(v)}});
-$('lang').value=set.lang;
+$('lang').value=VOICE_LANGS.includes(set.lang)?set.lang:'';
 function lh(){$('lh').hidden=!set.lang||set.lang.startsWith('en')}
-$('lang').onchange=()=>{set.lang=$('lang').value;persist();lh()};lh();
+$('lang').onchange=()=>{const v=$('lang').value;set.lang=VOICE_LANGS.includes(v)?v:'';persist();lh()};lh();
+/* If the user types Tamil/Malayalam directly, remember it for next voice run. */
+function learnScriptLang(s){const d=detectScriptLang(s);if(d&&set.lang!==d){set.lang=d;try{$('lang').value=d}catch(e){}persist();lh()}}
+$('tin').addEventListener('input',e=>learnScriptLang(e.target.value));
+$('in').addEventListener('input',e=>learnScriptLang(e.target.value));
 $('chat').addEventListener('click',e=>{
  const s=e.target.closest('[data-say]'),a=e.target.closest('[data-act]'),u=e.target.closest('[data-undo]'),cl=e.target.closest('[data-cal]');
  if(cl)addToCal(cl.dataset.cal);

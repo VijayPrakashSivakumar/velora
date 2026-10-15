@@ -1,10 +1,15 @@
 {
+  "id": "./",
   "name": "Velora",
   "short_name": "Velora",
   "description": "Voice-first personal automation assistant",
-  "start_url": "./index.html",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["productivity", "lifestyle", "utilities"],
+  "start_url": "./",
   "scope": "./",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
   "orientation": "portrait",
   "background_color": "#100d1a",
   "theme_color": "#6a46f0",
@@ -13,17 +18,29 @@
       "src": "icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ],
   "share_target": {
-    "action": "./index.html",
+    "action": "./",
     "method": "GET",
     "params": {
       "title": "title",
@@ -48,6 +65,19 @@
       "name": "Add a task",
       "short_name": "Add",
       "url": "./index.html?a=add",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Quick add a task",
+      "short_name": "Quick add",
+      "description": "Open Velora straight into the add box",
+      "url": "./?a=quickadd",
       "icons": [
         {
           "src": "icon-192.png",

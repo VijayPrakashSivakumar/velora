@@ -1,6 +1,6 @@
 # Velora: install on your phone as an app (no computer build)
 
-These 5 files are a Progressive Web App. Once hosted on any https address,
+These files are a Progressive Web App. Once hosted on any https address,
 Chrome on Android installs it like a normal app: home-screen icon, full screen,
 opens offline, appears in the Share menu, and keeps your data on the phone.
 
@@ -15,18 +15,40 @@ opens offline, appears in the Share menu, and keeps your data on the phone.
    `/ (root)`, Save. After about a minute your address is
    `https://YOURNAME.github.io/velora/`
 5. Open it in Chrome > menu > Install app (or Add to Home screen).
+   Velora also shows its own Install banner when the browser allows it.
 
 Your tasks never leave the phone. Only the app files are public, not your data.
 Any other static host works too (Netlify, Cloudflare Pages).
 
 ## What you get
 - Opens instantly and works offline after the first visit
+- One-tap Install banner plus update notice when a new version is cached
+- Voice in English, Tamil, Malayalam: pick en-US / en-IN / en-GB / ta-IN / ml-IN,
+  or just type in Tamil / Malayalam and Velora remembers it for next voice run.
+  Understands plan-my-day, summary, remind, add, find, today / tomorrow
+  (இன்று / நாளை, ഇന്ന് / നാളെ) in all three.
 - Voice and typed commands, plan my day, summaries, find
 - Tasks you can edit (title, date, time, repeat, priority star)
 - Week view, focus timer with time tracking, photo notes
+- Photo auto-cleanup: when storage fills, Velora compresses older photo notes
+  first, then clears photos from completed notes, then tells you what it freed.
+- Widget + shortcut Quick-add: home-screen "+ Add task" button opens Velora
+  straight into the add box (native APK intent + `./?a=quickadd` web shortcut).
 - Automations with Suggest / Ask / Auto permissions and a pause-all switch
 - Share any text from another app to Velora ("Share" > Velora)
 - Backup and restore from Automations > Data & look
+- Clearer "storage full" guidance before local data stops saving
+
+## Native Android app (guaranteed alarms + widget + offline voice)
+1. Push to GitHub `main`.
+2. Actions tab > Build Velora APK > Run workflow.
+3. Download the `velora-apk` artifact and install it on your phone.
+4. Open once, tap "Enable alerts", and allow Alarms & reminders +
+   Notifications + Microphone.
+
+Native extras over the web install: exact alarms that fire even when the
+app is closed, Done / Snooze buttons on notifications, home-screen widget,
+and on-device speech recognition where supported.
 
 ## Honest limits of the installed web app
 - Reminders are shown while Velora is open or recently in the background.

@@ -17,10 +17,8 @@ jobs:
           java-version: 21
       - name: Install and prepare web files
         run: |
-          npm install
-          mkdir -p www
-          cp index.html www/
-          cp -f manifest.webmanifest sw.js icon-192.png icon-512.png www/ 2>/dev/null || true
+          npm ci || npm install
+          npm run prepare-www
           npx cap add android
       - name: Add Velora native code (widget)
         run: |
@@ -29,6 +27,7 @@ jobs:
           mkdir -p $R/layout $R/drawable $R/xml $R/values
           cat > $D/MainActivity.java <<'VEOF'
           package app.velora.assistant;
+          import android.content.Intent;
           import android.os.Bundle;
           import com.getcapacitor.BridgeActivity;
           public class MainActivity extends BridgeActivity {
@@ -36,6 +35,21 @@ jobs:
             public void onCreate(Bundle savedInstanceState) {
               registerPlugin(WidgetBridgePlugin.class);
               super.onCreate(savedInstanceState);
+              handleQuickAdd(getIntent());
+            }
+            @Override
+            public void onNewIntent(Intent intent) {
+              super.onNewIntent(intent);
+              setIntent(intent);
+              handleQuickAdd(intent);
+            }
+            private void handleQuickAdd(Intent intent) {
+              if (intent == null) return;
+              String a = intent.getStringExtra("velora_action");
+              if ("quickadd".equals(a)) {
+                getIntent().putExtra("velora_action", "consumed");
+                bridge.eval("window.dispatchEvent(new Event('velora-quickadd'))", null);
+              }
             }
           }
           VEOF
@@ -82,6 +96,10 @@ jobs:
               Intent open = ctx.getPackageManager().getLaunchIntentForPackage(ctx.getPackageName());
               PendingIntent pi = PendingIntent.getActivity(ctx, 0, open, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
               v.setOnClickPendingIntent(R.id.w_root, pi);
+              Intent add = ctx.getPackageManager().getLaunchIntentForPackage(ctx.getPackageName());
+              if (add != null) { add.setAction("app.velora.assistant.QUICK_ADD"); add.putExtra("velora_action", "quickadd"); }
+              PendingIntent addPi = PendingIntent.getActivity(ctx, 7, add, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+              v.setOnClickPendingIntent(R.id.w_add, addPi);
               return v;
             }
             static void refreshAll(Context ctx) {
@@ -106,6 +124,9 @@ jobs:
                 android:textColor="#FFFFFF" android:textStyle="bold" android:textSize="18sp" android:maxLines="1"/>
             <TextView android:id="@+id/w_text" android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:layout_marginTop="6dp" android:textColor="#EFEAF8" android:textSize="14sp" android:maxLines="5"/>
+            <Button android:id="@+id/w_add" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:layout_marginTop="10dp" android:text="+ Add task" android:textColor="#1A1626"
+                android:background="@drawable/widget_btn"/>
           </LinearLayout>
           VEOF
           cat > $R/drawable/widget_bg.xml <<'VEOF'
@@ -113,6 +134,14 @@ jobs:
           <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
             <solid android:color="#1A1626"/>
             <corners android:radius="22dp"/>
+          </shape>
+          VEOF
+          cat > $R/drawable/widget_btn.xml <<'VEOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+            <solid android:color="#E3C27C"/>
+            <corners android:radius="99dp"/>
+            <padding android:left="16dp" android:right="16dp" android:top="10dp" android:bottom="10dp"/>
           </shape>
           VEOF
           cat > $R/xml/velora_widget_info.xml <<'VEOF'

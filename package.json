@@ -1,13 +1,17 @@
 {
   "name": "velora",
-  "version": "0.3.0",
+  "version": "0.5.0",
   "private": true,
   "description": "Velora mobile life automation assistant",
+  "scripts": {
+    "prepare-www": "mkdir -p www && cp index.html www/ && cp -f manifest.webmanifest sw.js icon-192.png icon-512.png www/",
+    "sync": "npm run prepare-www && cap sync android"
+  },
   "dependencies": {
-    "@capacitor/android": "latest",
-    "@capacitor/cli": "latest",
-    "@capacitor/core": "latest",
-    "@capacitor/local-notifications": "latest",
-    "@capacitor-community/speech-recognition": "latest"
+    "@capacitor/android": "^7.4.0",
+    "@capacitor/cli": "^7.4.0",
+    "@capacitor/core": "^7.4.0",
+    "@capacitor/local-notifications": "^7.0.0",
+    "@capacitor-community/speech-recognition": "^7.0.0"
   }
 }
