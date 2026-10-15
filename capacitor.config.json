@@ -1,0 +1,8 @@
+{
+  "appId": "app.velora.assistant",
+  "appName": "Velora",
+  "webDir": "www",
+  "plugins": {
+    "LocalNotifications": { "iconColor": "#6A46F0" }
+  }
+}
