@@ -187,6 +187,7 @@ jobs:
         run: |
           npx cap sync android
           cd android
+          rm -f app/src/main/res/drawable/splash.png
           chmod +x gradlew
           ./gradlew assembleDebug
       - uses: actions/upload-artifact@v4
