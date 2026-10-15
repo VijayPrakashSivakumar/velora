@@ -1,4 +1,4 @@
-/* Velora offline shell. v9 ships the premium UI polish. */
+e/* Velora offline shell. v9 ships the premium UI polish. */
 const C='velora-v9';
 const A=['./','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(A)).then(()=>self.skipWaiting()))});
