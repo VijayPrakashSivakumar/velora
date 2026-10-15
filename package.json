@@ -4,6 +4,7 @@
   "private": true,
   "description": "Velora mobile life automation assistant",
   "scripts": {
+    "test": "node vault-test.js",
     "prepare-www": "mkdir -p www && cp index.html www/ && cp -f manifest.webmanifest sw.js icon-192.png icon-512.png www/",
     "sync": "npm run prepare-www && cap sync android"
   },

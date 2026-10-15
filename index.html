@@ -344,7 +344,7 @@ const score=(i,t)=>t.reduce((n,w)=>n+(i.text.toLowerCase().includes(w)?1:0),0);
 function matchOne(q,pool){const t=toks(q);if(!t.length)return null;let b=null,bs=0;pool.forEach(i=>{const s=score(i,t);if(s>bs){bs=s;b=i}});return b}
 
 /* ---------- Chat UI helpers ---------- */
-function say(html,qs){const b=document.createElement('div');b.className='b';b.innerHTML=html+(qs||'');$('chat').appendChild(b);$('chat').scrollTop=1e9}
+function say(html,qs){const b=document.createElement('div');b.className='b';b.innerHTML=html+(qs||'');$('chat').appendChild(b);$('chat').scrollTop=1e9;return b}
 function me(t){const b=document.createElement('div');b.className='b me';b.textContent=t;$('chat').appendChild(b);$('chat').scrollTop=1e9}
 const chips=a=>'<div class="qs">'+a.map(x=>`<button class="q" data-say="${esc(x)}">${esc(x)}</button>`).join('')+'</div>';
 const yesno=l=>`<div class="qs"><button class="q go" data-act="yes">${l}</button><button class="q" data-act="no">Cancel</button></div>`;
@@ -387,7 +387,7 @@ function route(raw,l){
   w.enabled=m[1]==='on';w.next=w.enabled?nextAt(w):null;wfSchedule(w);persistWF();renderPend();renderAuto();return say(`${esc(w.name)} is now <b>${m[1]}</b>.`);
  }
  if(/^(find|search|show me|look for)\b/.test(l)||/^(தேடு|தேடிக் கொடு|തിരയൂ|തിരഞ്ഞു തരൂ)\b/.test(raw.trim())){if(vaultAnswer(raw))return;return find(raw)}
- if(/bill|vault|eb bill|my .*date|my .*amount|open .*bill|show .*bill/i.test(l)){if(vaultAnswer(raw))return}
+ if(/bill|vault|warrant|subscri|\bsub\b|renew|expir|pnr|prescription|\bticket\b|passport|aadhaar|pan card|licen[sc]e|medical|appointment|\bmy .*(date|amount|expiry|pnr|report|plan)\b/i.test(l)){if(vaultAnswer(raw))return}
  startCreate(raw);
 }
 function startCreate(raw){
@@ -1026,8 +1026,8 @@ let vaultFilter='all',sel=new Set(),selMode=false;
 const URL_RE=/(https?:\/\/[^\s<>"']+|www\.[^\s<>"']+)/i;
 const BILL_WORDS=['eb','electricity','tneb','tangedco','water bill','water can','gas bill','gas cylinder','broadband','wifi bill','mobile bill','recharge','rent','maintenance','emi','loan','credit card','insurance','property tax','bill','invoice','receipt','payment due','due date','amount due','units consumed','consumer no'];
 const STUDY_WORDS=['chapter','lesson','syllabus','exam','hall ticket','question paper','assignment','notes','tutorial','course','subject','maths','physics','chemistry','biology','ncert','study'];
-const SUB_WORDS=['subscription','netflix','prime','hotstar','spotify','youtube premium','icloud','google one','gym','membership','renewal','renews','expires subscription','plan expires','ott'];
-const MED_WORDS=['prescription','doctor','hospital','clinic','tablet','medicine','dosage','mg ','blood test','x-ray','xray','scan report','sugar level','bp ','vaccine','dental','appointment with dr','medical'];
+const SUB_WORDS=['subscription','netflix','amazon prime','prime video','hotstar','spotify','youtube premium','icloud','google one','gym membership','gym fee','gym renewal','membership','renewal','renews','expires subscription','plan expires','ott'];
+const MED_WORDS=['prescription','doctor','hospital','clinic','tablet for','tablets','tablet strip','medicine','dosage','mg ','blood test','x-ray','xray','scan report','sugar level','bp reading','vaccine','dental','appointment with dr','medical'];
 const TRAVEL_WORDS=['pnr','boarding pass','flight','train ticket','bus ticket','booking id','hotel booking','check-in','checkin','itinerary','seat no','coach no','platform','terminal','gate no'];
 const ID_WORDS=['aadhaar','aadhar','pan card','voter id','driving licence','driving license','passport','ration card','id proof','license no','aadhaar no'];
 const WAR_WORDS=['warranty','guarantee','invoice for tv','invoice for fridge','invoice for ac','invoice for washing','invoice for mobile','invoice for laptop','bill for tv','bill for fridge','bill for ac','bill for washing machine','purchased on','serial no','warranty till','warranty until'];
@@ -1049,7 +1049,7 @@ function detectVault(raw){
  const has=a=>a.some(w=>l.includes(w));
  const billHit=has(BILL_WORDS),studyHit=has(STUDY_WORDS),subHit=has(SUB_WORDS),medHit=has(MED_WORDS),travelHit=has(TRAVEL_WORDS),idHit=has(ID_WORDS),warHit=has(WAR_WORDS);
  const amt=extractAmount(s),dt=extractBillDate(s);
- if(idHit){
+ if(idHit&&!/^(renew|apply|pay|submit|book|finish|send|call|update|check|verify|renewal|deadline)\b/.test(l)){
   let who='ID proof';const m=s.match(/(aadhaar|aadhar|pan card|voter id|driving licen[sc]e|passport|ration card)/i);if(m)who=cap(m[1]);
   return{cat:'id',title:who+' (ID)',meta:'Tap photo to view · keep original safe',due:null,url};
  }
@@ -1082,7 +1082,7 @@ function detectVault(raw){
  if(studyHit||/\.pdf\b|coursera|udemy|khan|ncert|class\s?\d+/.test(l)){
   const m=s.match(/(chapter|lesson|unit)\s?(\d+)?\s*[:\-]?\s*([^\n,]{0,60})?/i);
   const title=m?cap((m[1]+(m[2]?' '+m[2]:''))+(m[3]?' — '+m[3].trim():'')):s.split('\n')[0].slice(0,70)||'Study material';
-  return{cat:'study',title:title,meta:[url?cleanUrlTitle(url):null,/exam|test/i.test(s)?'Exam prep':null].filter(Boolean).join(' · '),due:null,url};
+  return{cat:'study',title:title,meta:[url?cleanUrlTitle(url):null,/exam|test/i.test(s)?'Exam prep':null].filter(Boolean).join(' · '),due:dt,url};
  }
  if(url){const host=cleanUrlTitle(url);const before=s.replace(URL_RE,'').trim().split('\n')[0].slice(0,70);
   return{cat:'url',title:(before.length>8?before:host),meta:host,url,due:null}}
@@ -1119,20 +1119,20 @@ function addTemplate(name){const list=TEMPLATES[name];if(!list)return;const s=sn
 /* Vault part 2: save + Q&A ("what is my EB bill date") */
 function saveVault(raw,img){
  const d=detectVault(raw);if(!d)return null;
- const it={id:uid(),type:'vault',vcat:d.cat,text:d.title,raw:String(raw).slice(0,2000),meta:d.meta||'',due:(d.cat==='bill'||d.cat==='sub'||d.cat==='warranty'||d.cat==='medical'||d.cat==='travel')?d.due:null,allDay:true,done:false,created:Date.now(),nid:newNid(),img:img||null,url:d.url||''};
+ const it={id:uid(),type:'vault',vcat:d.cat,text:d.title,raw:String(raw).slice(0,2000),meta:d.meta||'',due:(d.cat==='bill'||d.cat==='sub'||d.cat==='warranty'||d.cat==='medical'||d.cat==='travel'||d.cat==='study')?d.due:null,allDay:true,done:false,created:Date.now(),nid:newNid(),img:img||null,url:d.url||''};
  items.unshift(it);if(it.due)Notify.schedule(it);persist();render();return it;
 }
 const vaultItems=()=>items.filter(i=>i.type==='vault'&&!i.done);
 function vaultAnswer(raw){
  const t=raw.trim();
- if(/^(show|list|open|find)?\s*(my\s+|the\s+|all\s+)?(bills?|warrant(y|ies)|subscriptions?|subs?|ids?|id proofs?|medical|prescriptions?|reports?|travel|tickets?|bookings?|pnr|study(\s+material|\s+notes)?|links?|urls?|docs?|documents?|files?|vault)\b/i.test(t)){
+ if(/^(?:(?:show|list|open|find|check|get|give|tell)\s+(?:me\s+)?(?:my\s+|the\s+|all\s+)?|(?:my|the|all)\s+)(?:the\s+|all\s+)?(bills?|warrant(y|ies)|subscriptions?|subs?|ids?|id proofs?|medical|prescriptions?|reports?|travel|tickets?|bookings?|pnr|study(\s+material|\s+notes)?|links?|urls?|docs?|documents?|files?|vault)\b/i.test(t)){
   const cat=/bill/i.test(t)?'bill':/warrant/i.test(t)?'warranty':/subscri|subs?\b|netflix|prime |hotstar|spotify|renewal/i.test(t)?'sub':/\bid\b|aadhaar|pan card|passport|licen/i.test(t)?'id':/medical|prescription|report|doctor|hospital/i.test(t)?'medical':/travel|ticket|booking|pnr|flight|train/i.test(t)?'travel':/study|notes?/i.test(t)?'study':/link|url/i.test(t)?'url':/doc|file/i.test(t)?'doc':'all';
   view='vault';vaultFilter=cat;setTabs();render();
   const all=vaultItems(),list=cat==='all'?all:all.filter(i=>i.vcat===cat);
   if(!list.length)return say(`Your vault has no ${cat==='all'?'items yet':VCATS[cat]+'s yet'}. Share one and I will file it.`);
   return say(`<b>${cat==='all'?'Everything in your vault':VCATS[cat]+'s'}</b> (${list.length})`+list.slice(0,6).map(i=>li(VCATS[i.vcat]+(i.due?' · due '+fmtDay(i.due):''),i.text)).join(''));
  }
- const m=t.match(/(?:what(?:'s| is)|when(?:'s| is)|show|tell me|give me)?\s*(?:my\s+|the\s+)?(.+?)\s*(bill|due date|date|amount|expir(y|es|ation)|renewal|link|url|pnr|prescription|report|note|notes|file|study material|warranty|subscription|ticket)\??$/i);
+ const m=t.match(/(?:what(?:'s| is)|when(?:'s| is)|show|tell me|give me)?\s*(?:my\s+|the\s+)?(.+?)\s*(bill|due date|date|amount|expir(y|es|ation)|renewal|renew|renewing|link|url|pnr|prescription|report|note|notes|file|study material|warranty|subscription|ticket)\??$/i);
  if(m){
   const key=(m[1]+' '+m[2]).toLowerCase(),tk=toks(key);
   const cands=vaultItems().map(i=>[score(i,tk.length?tk:[key]),i]).filter(x=>x[0]).sort((a,b)=>b[0]-a[0]);
