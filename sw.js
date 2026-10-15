@@ -1,5 +1,5 @@
-/* Velora offline shell. v8 adds quick-add shortcut URL + widget intent support. */
-const C='velora-v8';
+/* Velora offline shell. v9 ships the premium UI polish. */
+const C='velora-v9';
 const A=['./','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(A)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil((async()=>{if('navigationPreload' in self.registration){try{await self.registration.navigationPreload.enable()}catch(e){}}const k=await caches.keys();await Promise.all(k.filter(x=>x!==C).map(x=>caches.delete(x)));await self.clients.claim()})())});
