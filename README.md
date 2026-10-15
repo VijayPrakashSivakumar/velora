@@ -34,6 +34,21 @@ Any other static host works too (Netlify, Cloudflare Pages).
   first, then clears photos from completed notes, then tells you what it freed.
 - Widget + shortcut Quick-add: home-screen "+ Add task" button opens Velora
   straight into the add box (native APK intent + `./?a=quickadd` web shortcut).
+- Smart Vault: share any text (bill, warranty card, subscription notice, ID,
+  prescription, flight / train / hotel ticket, study note, link) and Velora
+  detects what it is and files it under Bill, Warranty, Subscription, ID,
+  Medical, Travel, Study, Link or Doc — with amount, due / expiry date, PNR,
+  photo and link kept together. Filter chips count each category.
+- Ask your Vault: "what is my EB bill date", "show my subscriptions",
+  "my PNR", "show my medical reports" — answered from what you saved,
+  no internet needed.
+- Undo everywhere: a 6-second Undo bar covers deletes, clear-completed and
+  bulk changes.
+- Bulk select: long-press a row to enter multi-select, then mark Done,
+  move to Tomorrow, or Share a list in one tap.
+- One-tap templates (Morning routine, Trip pack, Study sprint) shown on the
+  Upcoming screen when you have nothing open, or by voice.
+- Morning briefing now also reads out renewals coming up in 3 days.
 - Automations with Suggest / Ask / Auto permissions and a pause-all switch
 - Share any text from another app to Velora ("Share" > Velora)
 - Backup and restore from Automations > Data & look

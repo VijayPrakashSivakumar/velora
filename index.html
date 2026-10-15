@@ -106,6 +106,21 @@ h2{font-size:13px;margin:28px 0 10px;font-weight:800;letter-spacing:.1em;text-tr
 .btns .go{background:linear-gradient(145deg,var(--acc),var(--acc2));border:0;color:#fff;box-shadow:0 8px 22px rgba(91,61,240,.32)}.btns .del{color:var(--warn)}
 .th{display:block;width:100%;max-width:220px;border-radius:12px;margin-top:8px}.th.big{max-width:100%}
 .dh{padding:14px 14px 4px;font-size:12px;font-weight:800;color:var(--mute)}
+.vaultbar{display:flex;gap:8px;flex-wrap:wrap;padding:12px 14px 4px}
+.vaultbar .sm.on{background:linear-gradient(145deg,var(--acc),var(--acc2));color:#fff;border-color:transparent}
+.vchip{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:3px 10px;border-radius:99px;background:var(--accsoft);color:var(--acc);margin-top:6px}
+.vchip.bill{background:#fdeeda;color:#9a5b0b}.vchip.study{background:#e4f3ff;color:#1663a8}.vchip.url{background:#e9f7ee;color:#22795a}.vchip.doc{background:#f1eaff;color:#5b3df0}.vchip.warranty{background:#fff3d6;color:#8a5f00}.vchip.sub{background:#ffe9f1;color:#b02a5e}.vchip.id{background:#e8ecff;color:#2f3fb8}.vchip.medical{background:#ffe9e9;color:#b03232}.vchip.travel{background:#e2f5f3;color:#0d6e66}
+:root[data-theme="dark"] .vchip.bill,.vchip.bill{background:#3a2a10;color:#f5c86e}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .vchip.study,:root:not([data-theme="light"]) .vchip.url,:root:not([data-theme="light"]) .vchip.doc,:root:not([data-theme="light"]) .vchip.warranty,:root:not([data-theme="light"]) .vchip.sub,:root:not([data-theme="light"]) .vchip.id,:root:not([data-theme="light"]) .vchip.medical,:root:not([data-theme="light"]) .vchip.travel{filter:brightness(1.06) saturate(.9)}}
+:root[data-theme="dark"] .vchip.study{background:#123047;color:#7cc2ff}:root[data-theme="dark"] .vchip.url{background:#12321f;color:#6ede9e}:root[data-theme="dark"] .vchip.doc{background:#241a4d;color:#b9a6ff}:root[data-theme="dark"] .vchip.warranty{background:#3a2a08;color:#f2c76a}:root[data-theme="dark"] .vchip.sub{background:#3a1226;color:#ff92b8}:root[data-theme="dark"] .vchip.id{background:#171d4a;color:#9aa6ff}:root[data-theme="dark"] .vchip.medical{background:#3a1616;color:#ff9a9a}:root[data-theme="dark"] .vchip.travel{background:#0d312d;color:#6fdcd0}
+.vmeta{font-size:12px;color:var(--mute);font-weight:500;margin-top:3px}
+.selbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:12px 14px;border-bottom:1px solid var(--line);background:color-mix(in srgb,var(--accsoft) 55%,transparent)}
+.selbar .selcount{font-size:13px;font-weight:800;color:var(--acc)}
+.selchk{width:30px;height:30px;border-radius:10px;border:2px solid var(--acc);background:none;flex:none;cursor:pointer;color:#fff;font-size:15px}
+.selchk.on{background:linear-gradient(145deg,var(--acc),var(--acc2));border-color:transparent}
+.undobar{position:fixed;left:50%;transform:translateX(-50%) translateY(20px);bottom:calc(178px + env(safe-area-inset-bottom,0px));z-index:25;display:flex;gap:10px;align-items:center;background:#221a38;color:#fff;border-radius:18px;padding:10px 12px 10px 16px;font-size:14px;font-weight:600;box-shadow:var(--sh2);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;max-width:92%}
+.undobar.show{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+.undobar button{min-height:40px;padding:0 16px;border-radius:99px;border:0;background:linear-gradient(145deg,var(--acc),var(--acc2));color:#fff;font:800 14px Manrope,sans-serif;cursor:pointer}
 .cam{width:52px;height:52px;border-radius:50%;border:1px solid var(--line);background:var(--bg);font-size:20px;flex:none;cursor:pointer}
 #abody{flex:1;overflow-y:auto;padding:4px 16px 30px;max-width:520px;width:100%;margin:0 auto}
 .pausebtn{width:100%;min-height:58px;border-radius:20px;border:1.5px solid var(--warn);background:var(--card);color:var(--warn);font:800 16px Manrope,sans-serif;cursor:pointer;box-shadow:var(--sh)}
@@ -155,6 +170,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
  <div class="tabs">
   <button class="tab on" data-v="upcoming">Upcoming</button>
   <button class="tab" data-v="week">Week</button>
+  <button class="tab" data-v="vault">Vault</button>
   <button class="tab" data-v="notes">Notes</button>
   <button class="tab" data-v="done">Done</button>
  </div>
@@ -173,7 +189,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 <div class="sheet" id="es"><div class="pane">
  <label for="et">Title</label><input type="text" id="et">
  <div id="eimg"></div>
- <label for="ety">Type</label><select id="ety"><option value="task">Task</option><option value="note">Note</option><option value="idea">Idea</option></select>
+ <label for="ety">Type</label><select id="ety"><option value="task">Task</option><option value="note">Note</option><option value="idea">Idea</option><option value="vault">Vault</option></select>
  <div id="etask"><label for="ed">Due date</label><input type="date" id="ed"><label for="etm">Time (optional)</label><input type="time" id="etm">
   <label for="er">Repeat</label><select id="er"><option value="">Never</option><option value="daily">Daily</option><option value="weekdays">Weekdays</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option></select></div>
  <label style="display:flex;gap:10px;align-items:center;font-size:15px;color:var(--ink);margin-top:16px"><input type="checkbox" id="estar" style="width:22px;height:22px"> Priority ★ (pinned to the top)</label>
@@ -207,6 +223,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
  </div>
 </section>
 <div id="toast" role="status"></div>
+<div class="undobar" id="undo" role="status"><span id="undotx">Deleted.</span><button id="undobtn" type="button">Undo</button></div>
 <section class="ov" id="ov" aria-label="Velora assistant">
  <div class="top"><select id="lang" aria-label="Speech language">
   <option value="">Voice: device language</option><option value="en-US">English (US)</option><option value="en-IN">English (India)</option><option value="en-GB">English (UK)</option><option value="ta-IN">தமிழ் (Tamil)</option><option value="ml-IN">മലയാളം (Malayalam)</option></select>
@@ -350,6 +367,7 @@ function route(raw,l){
  if(/இன்றைய நாளை திட்டமிடு|என் நாளை திட்டமிடு|நாளை திட்டமிடு|என்னுடைய நாளை|എന്നെ ഇന്ന് പ്ലാൻ|എന്റെ ദിവസം പ്ലാൻ|ഇന്ന് പ്ലാൻ|ദിവസം ആസൂത്രണം/.test(raw))return planDay();
  if(/சுருக்கம்|இன்று நான் என்ன செய்தேன்|സംഗ്രഹം|ഇന്ന് ഞാൻ എന്തു ചെയ്തു/.test(raw))return summary();
  if(/\bplan (my )?(entire |whole )?day\b|\bplan today\b/.test(l))return planDay();
+ if(/^add (morning routine|trip pack|study sprint)( list| template)?$/.test(l)){const k=l.match(/^add (morning routine|trip pack|study sprint)/)[1];const name=Object.keys(TEMPLATES).find(x=>x.toLowerCase()===k);if(name){addTemplate(name);return say(`Added <b>${esc(name)}</b> checklist.`)}}
  if(/what can you (handle|do)|what.*automatically/.test(l))return caps();
  if(/summary|what did i (do|finish|complete)|wrap up my day/.test(l))return summary();
  if(/\b(organi[sz]e|sort|prioriti[sz]e|rank)\b.*\b(tasks?|priority|priorities)\b/.test(l))return prioritize();
@@ -368,10 +386,16 @@ function route(raw,l){
   const w=matchWf(m[2]);if(!w)return say(`I couldn't find an automation like “${esc(m[2])}”.`);
   w.enabled=m[1]==='on';w.next=w.enabled?nextAt(w):null;wfSchedule(w);persistWF();renderPend();renderAuto();return say(`${esc(w.name)} is now <b>${m[1]}</b>.`);
  }
- if(/^(find|search|show me|look for)\b/.test(l)||/^(தேடு|தேடிக் கொடு|തിരയൂ|തിരഞ്ഞു തരൂ)\b/.test(raw.trim()))return find(raw);
+ if(/^(find|search|show me|look for)\b/.test(l)||/^(தேடு|தேடிக் கொடு|തിരയൂ|തിരഞ്ഞു തരൂ)\b/.test(raw.trim())){if(vaultAnswer(raw))return;return find(raw)}
+ if(/bill|vault|eb bill|my .*date|my .*amount|open .*bill|show .*bill/i.test(l)){if(vaultAnswer(raw))return}
  startCreate(raw);
 }
 function startCreate(raw){
+ const v=detectVault(raw);
+ if(v&&(v.cat!=='doc'||/bill|warranty|prescription|ticket|aadhaar|pan|passport|certificate|marksheet/i.test(raw))){
+  const it=saveVault(raw);
+  if(it){say(`Filed in your <b>Vault</b> as <b>${esc(it.text)}</b><div class="meta">${esc(it.meta||VCATS[it.vcat])}.</div>`,chips(['Show my vault','Show my bills']));view='vault';vaultFilter=it.vcat;setTabs();render();return}
+ }
  const l=raw.toLowerCase(),isRem=/^(please )?(remind|set a reminder|reminder)/.test(l)||/ஞாபகப்படுத்து|நினைவூட்டு|ஞாபகம்|ഓർമ്മിപ്പിക്കൂ|ഓർമ്മപ്പെടുത്തൂ|ഓർമ്മ/.test(raw),w=when(l),r=rep(l);if(r&&!w.day&&!w.rel&&!w.time)w.day=dayStart(new Date());const c=compose(w);
  let type='note';
  if(/\b(idea|what if|brainstorm)\b/.test(l))type='idea';
@@ -425,7 +449,7 @@ function summary(){
  say(`<b>Today so far</b><div class="li"><b>${dn.length}</b><span>completed${dn.length?': '+esc(dn.slice(0,3).map(i=>i.text).join(', ')):''}</span></div><div class="li"><b>${o.length}</b><span>still open, ${late} overdue</span></div><div class="li"><b>${focusMin(t0)}m</b><span>focused today</span></div>`+(o.length?'<div class="meta" style="margin-top:8px">Tomorrow’s top tasks</div>'+o.slice(0,3).map(i=>li(i.due?fmtDay(i.due):'Anytime',i.text)).join(''):''));
 }
 function caps(){
- say('<b>What I can handle now</b><div class="li"><span>Add tasks, reminders, notes and ideas from your voice or typing</span></div><div class="li"><span>Plan your day, sort by priority, find saved items, write your summary</span></div><div class="li"><span>Move overdue tasks, mark done, delete (I always ask first)</span></div><div class="li"><span>Run automations: morning briefing, end-of-day review, overdue rollover. You choose how much each can do alone</span></div><div class="meta">Not yet: sending messages, calendar sync, cloud AI. Those need the online phases.</div>',chips(['Plan my day','Move my unfinished tasks','Prepare my work summary']));
+ say('<b>What I can handle now</b><div class="li"><span>Add tasks, reminders, notes and ideas from your voice or typing</span></div><div class="li"><span>File bills, warranties, subscriptions, IDs, prescriptions, tickets, links and study notes into your Vault — auto-detected and titled</span></div><div class="li"><span>Answer “what is my EB bill date”, “show my subscriptions”, “my PNR” from your Vault</span></div><div class="li"><span>Plan your day, sort by priority, find saved items, write your summary</span></div><div class="li"><span>Delete with a 6-second Undo, and bulk-select many items at once</span></div><div class="li"><span>Run automations: morning briefing (with renewals), end-of-day review, overdue rollover. You choose how much each can do alone</span></div><div class="meta">Not yet: sending messages, calendar sync, cloud AI. Those need the online phases.</div>',chips(['Plan my day','Show my vault','Add morning routine list','Move my unfinished tasks']));
 }
 function moveUnfinished(){
  const od=open().filter(isLate);
@@ -435,12 +459,12 @@ function moveUnfinished(){
 }
 function clearDone(){
  const dn=items.filter(i=>i.done);if(!dn.length)return say('Nothing completed to clear.');
- pending={t:'confirm',run(){items=items.filter(i=>!i.done);persist();render();say(`Cleared ${dn.length} completed ${dn.length>1?'items':'item'}.`)}};
+ pending={t:'confirm',run(){const s=snapshot();items=items.filter(i=>!i.done);persist();render();showUndo(`Cleared ${dn.length} completed ${dn.length>1?'items':'item'}.`,s);say(`Cleared ${dn.length}. Undo available below.`)}};
  say(`<b>Permanently delete ${dn.length} completed ${dn.length>1?'items':'item'}?</b>`,yesno('Delete'));
 }
 function delOne(q){
  const it=matchOne(q,items);if(!it)return say(`I couldn't find “${esc(q)}”.`);
- pending={t:'confirm',run(){Notify.cancel(it);items=items.filter(x=>x.id!==it.id);persist();render();say('Deleted.')}};
+ pending={t:'confirm',run(){const s=snapshot();Notify.cancel(it);items=items.filter(x=>x.id!==it.id);persist();render();showUndo(`Deleted “${it.text.slice(0,40)}”.`,s);say('Deleted. Undo available below.')}};
  say(`<b>Delete “${esc(it.text)}”?</b>`,yesno('Delete'));
 }
 function markDone(q){
@@ -529,9 +553,12 @@ const hrs=()=>[...auto.ws.split(':').map(Number),...auto.we.split(':').map(Numbe
 const persistWF=()=>{try{localStorage.setItem('vl.wf.v1',JSON.stringify(wfs));localStorage.setItem('vl.auto.v1',JSON.stringify(auto));localStorage.setItem('vl.pend.v1',JSON.stringify(pend))}catch(e){}};
 function moveTo(list){list.forEach(i=>{const n=new Date(i.due),t=new Date();n.setFullYear(t.getFullYear(),t.getMonth(),t.getDate()+1);i.due=n.toISOString();Notify.schedule(i)});persist();render()}
 const ACT={
- briefing:{desc:'Reads out your open and due tasks and your top three.',build(){
+ briefing:{desc:'Reads out your open and due tasks, renewals and your top three.',build(){
   const o=open().sort(rank),due=o.filter(i=>i.due&&new Date(i.due)<tomorrow()).length;
-  return{msg:o.length?`${o.length} open, ${due} due today. Top: ${o.slice(0,3).map(i=>i.text).join('; ')}.`:'Nothing open today. A clear day.'}}},
+  const soon=new Date(Date.now()+3*864e5);
+  const ren=vaultItems().filter(i=>!i.done&&i.due&&new Date(i.due)<=soon&&i.vcat!=='bill').slice(0,3);
+  const rt=ren.length?' Renewing soon: '+ren.map(i=>i.text).join('; ')+'.':'';
+  return{msg:o.length?`${o.length} open, ${due} due today. Top: ${o.slice(0,3).map(i=>i.text).join('; ')}.`+rt:'Nothing open today. A clear day.'+rt}}},
  eod:{desc:'Summarises today and offers to move unfinished tasks to tomorrow.',build(){
   const t0=dayStart(new Date()),dn=items.filter(i=>i.done&&i.doneAt&&new Date(i.doneAt)>=t0).length,un=open().filter(i=>i.due&&new Date(i.due)<tomorrow());
   const top=open().filter(i=>!un.includes(i)).sort(rank).slice(0,3);
@@ -756,7 +783,7 @@ function addToCal(id){
  const a=document.createElement('a');a.href=u;a.target='_blank';a.rel='noopener';document.body.appendChild(a);a.click();a.remove();
 }
 $('ecal').onclick=()=>addToCal(editId);
-$('edel').onclick=()=>{const i=items.find(x=>x.id===editId);if(!i)return;Notify.cancel(i);items=items.filter(x=>x!==i);persist();render();$('es').classList.remove('show');toast('Deleted')};
+$('edel').onclick=()=>{const i=items.find(x=>x.id===editId);if(!i)return;const s=snapshot();Notify.cancel(i);items=items.filter(x=>x!==i);persist();render();$('es').classList.remove('show');showUndo(`Deleted “${i.text.slice(0,40)}”.`,s)};
 $('esave').onclick=()=>{
  const i=items.find(x=>x.id===editId);if(!i)return;
  Notify.cancel(i);
@@ -766,7 +793,7 @@ $('esave').onclick=()=>{
   const dv=$('ed').value,tv=$('etm').value;
   if(dv){const d=new Date(dv+'T'+(tv||'00:00'));i.due=d.toISOString();i.allDay=!tv}else{i.due=null;i.allDay=false}
   i.rep=i.due&&$('er').value?$('er').value:null;
- }else{i.due=null;i.allDay=false;i.rep=null}
+ }else if(i.type!=='vault'){i.due=null;i.allDay=false;i.rep=null}
  persist();render();Notify.schedule(i);$('es').classList.remove('show');toast('Saved');
 };
 /* focus timer */
@@ -806,7 +833,10 @@ function shrink(f){return new Promise((res,rej)=>{const im=new Image(),u=URL.cre
 $('cam').onclick=()=>$('pf').click();
 $('pf').onchange=async()=>{
  const f=$('pf').files[0];$('pf').value='';if(!f)return;
- try{const url=await shrink(f),it={id:uid(),type:'note',text:'Photo note',due:null,allDay:false,done:false,created:Date.now(),nid:newNid(),img:url};
+ try{const url=await shrink(f);
+  const label=prompt('What is this photo? (e.g. EB bill Dec, Physics chapter 5, Aadhaar)');
+  if(label&&detectVault(label)){const it=saveVault(label,url);if(it){view='vault';setTabs();render();toast('Filed in Vault: '+it.text);return}}
+  const it={id:uid(),type:'note',text:(label||'Photo note').slice(0,120),due:null,allDay:false,done:false,created:Date.now(),nid:newNid(),img:url};
   items.unshift(it);persist();view='notes';setTabs();render();openEdit(it.id)}
  catch(e){toast('Could not read that photo')}
 };
@@ -927,7 +957,8 @@ $('chat').addEventListener('click',e=>{
 
 /* ---------- Home ---------- */
 function row(i){
- return `<div class="row ${i.done?'done':''}" id="r-${i.id}"><button class="chk" data-c="${i.id}" aria-label="${i.done?'Mark not done':'Mark done'}">${i.done?'✓':''}</button>
+ const selOn=sel.has(i.id);
+ return `<div class="row ${i.done?'done':''}" id="r-${i.id}"><button class="${selMode?'selchk':'chk'}${selOn?' on':''}" data-${selMode?'sel':'c'}="${i.id}" aria-label="${selMode?'Select':'Mark done'}">${selMode?(selOn?'✓':''):i.done?'✓':''}</button>
  <div class="t" data-e="${i.id}">${i.star?'★ ':''}${esc(i.text)}${i.img?`<img class="th" src="${i.img}" alt="Attached photo">`:''}${i.spent?`<div class="meta">⏱ ${i.spent} min focused</div>`:''}${i.due?`<div class="meta ${isLate(i)?'late':''}">${i.rem?'🔔 ':''}${esc(fmt(i.due,i.allDay))}${i.rep?' · ↻ '+REPL[i.rep]:''}</div>`:i.type==='idea'?'<div class="meta">Idea</div>':''}</div>${i.type==='task'&&!i.done?`<button class="x" data-f="${i.id}" aria-label="Start focus timer">⏱</button>`:''}<button class="x" data-d="${i.id}" aria-label="Delete">×</button></div>`;
 }
 function render(){
@@ -940,17 +971,32 @@ function render(){
  let list,title;
  if(view==='upcoming'){list=o.slice(3);title='Everything else'}
  else if(view==='week'){list=null;title='Next 7 days'}
- else if(view==='notes'){list=items.filter(i=>i.type!=='task');title='Notes & ideas'}
+ else if(view==='vault'){list=null;title='Smart vault'}
+ else if(view==='notes'){list=items.filter(i=>i.type!=='task'&&i.type!=='vault');title='Notes & ideas'}
  else{list=items.filter(i=>i.done);title='Completed'}
  $('vh').textContent=title;
- $('list').innerHTML=list===null?weekHTML():list.length?list.map(row).join(''):'<div class="empty">Nothing here yet.</div>';renderPend();pushWidget();
+ const selbar2=(selMode||sel.size)&&view!=='vault'?`<div class="selbar"><span class="selcount">${sel.size} selected</span><button class="sm" data-bulk="done">Done</button><button class="sm" data-bulk="tomorrow">Tomorrow</button><button class="sm" data-bulk="share">Share</button><button class="sm" data-bulk="clear">Clear</button></div>`:'';
+ const tpl=view==='upcoming'&&!o.length?`<div class="vaultbar"><span class="vmeta">One-tap starters:</span>${Object.keys(TEMPLATES).map(k=>`<button class="sm" data-tpl="${esc(k)}">${esc(k)}</button>`).join('')}</div>`:'';
+ $('list').innerHTML=selbar2+tpl+(list===null?(view==='vault'?vaultHTML():weekHTML()):list.length?list.map(row).join(''):'<div class="empty">Nothing here yet.</div>');renderPend();pushWidget();
 }
 document.querySelector('main').addEventListener('click',e=>{
+ const tp=e.target.closest('[data-tpl]');
+ if(tp){addTemplate(tp.dataset.tpl);return}
+ const vf=e.target.closest('[data-vf]'),bk=e.target.closest('[data-bulk]');
+ if(vf){vaultFilter=vf.dataset.vf;render();return}
+ if(bk){const b=bk.dataset.bulk;if(b==='done')bulkDone();else if(b==='tomorrow')bulkTomorrow();else if(b==='share')bulkShare();else bulkClear();return}
+ const s=e.target.closest('[data-sel]');
+ if(s){const id=s.dataset.sel;if(sel.has(id))sel.delete(id);else sel.add(id);if(sel.size>=1)selMode=true;if(!sel.size)selMode=false;render();return}
+ const op=e.target.closest('[data-open]');
+ if(op){try{let u=op.dataset.open;if(!/^https?:/i.test(u))u='https://'+u;open(u,'_blank','noopener')}catch(err){}return}
  const c=e.target.closest('[data-c]'),d=e.target.closest('[data-d]'),ed=e.target.closest('[data-e]'),fo=e.target.closest('[data-f]');
  if(fo)return startFocus(fo.dataset.f);if(ed&&!c&&!d)return openEdit(ed.dataset.e);
  if(c){const i=items.find(x=>x.id===c.dataset.c);if(i)setDone(i,!i.done);}
- if(d){const it=items.find(x=>x.id===d.dataset.d);if(it)Notify.cancel(it);items=items.filter(x=>x.id!==d.dataset.d);persist();render()}
+ if(d){const id=d.dataset.d,it=items.find(x=>x.id===id);if(!it)return;const s0=snapshot();Notify.cancel(it);items=items.filter(x=>x.id!==id);sel.delete(id);persist();render();showUndo(`Deleted “${it.text.slice(0,40)}”.`,s0)}
 });
+$('undobtn').onclick=()=>{if(!undoSnap)return;items=undoSnap;undoSnap=null;$('undo').classList.remove('show');sel.clear();selMode=false;persist();render();Notify.syncAll();toast('Restored.')};
+/* Long-press a task row to enter multi-select bulk mode. */
+document.querySelector('main').addEventListener('contextmenu',e=>{const r=e.target.closest('.row');if(!r)return;e.preventDefault();const id=(r.id||'').replace(/^r-/,'');if(!id)return;selMode=true;sel.add(id);render();toast('Multi-select on. Tap circles to pick, then use Done / Tomorrow / Share.')});
 function setTabs(){document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on',b.dataset.v===view))}
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{view=b.dataset.v;setTabs();render()});
 
@@ -974,6 +1020,128 @@ net();speed();render();Notify.init();renderAuto();runDue();catchUp();shareIn();h
 /* Branded splash: show at least ~900ms so the logo reads, then fade. */
 function hideSplash(){const done=()=>{try{document.documentElement.classList.add('velora-ready')}catch(e){}const s=$('splash');if(!s)return;s.classList.add('hide');setTimeout(()=>{try{s.remove()}catch(e){}},600)};
  try{const t0=+sessionStorage.getItem('vl.splash.t0')||Date.now();const wait=Math.max(0,900-(Date.now()-t0));setTimeout(done,wait)}catch(e){setTimeout(done,900)}}
+/* ============ Vault — smart bill / study / URL organiser (part 1: detect) ============ */
+const VCATS={bill:'Bill',warranty:'Warranty',sub:'Subscription',id:'ID',medical:'Medical',travel:'Travel',study:'Study',url:'Link',doc:'Doc',other:'Saved'};
+let vaultFilter='all',sel=new Set(),selMode=false;
+const URL_RE=/(https?:\/\/[^\s<>"']+|www\.[^\s<>"']+)/i;
+const BILL_WORDS=['eb','electricity','tneb','tangedco','water bill','water can','gas bill','gas cylinder','broadband','wifi bill','mobile bill','recharge','rent','maintenance','emi','loan','credit card','insurance','property tax','bill','invoice','receipt','payment due','due date','amount due','units consumed','consumer no'];
+const STUDY_WORDS=['chapter','lesson','syllabus','exam','hall ticket','question paper','assignment','notes','tutorial','course','subject','maths','physics','chemistry','biology','ncert','study'];
+const SUB_WORDS=['subscription','netflix','prime','hotstar','spotify','youtube premium','icloud','google one','gym','membership','renewal','renews','expires subscription','plan expires','ott'];
+const MED_WORDS=['prescription','doctor','hospital','clinic','tablet','medicine','dosage','mg ','blood test','x-ray','xray','scan report','sugar level','bp ','vaccine','dental','appointment with dr','medical'];
+const TRAVEL_WORDS=['pnr','boarding pass','flight','train ticket','bus ticket','booking id','hotel booking','check-in','checkin','itinerary','seat no','coach no','platform','terminal','gate no'];
+const ID_WORDS=['aadhaar','aadhar','pan card','voter id','driving licence','driving license','passport','ration card','id proof','license no','aadhaar no'];
+const WAR_WORDS=['warranty','guarantee','invoice for tv','invoice for fridge','invoice for ac','invoice for washing','invoice for mobile','invoice for laptop','bill for tv','bill for fridge','bill for ac','bill for washing machine','purchased on','serial no','warranty till','warranty until'];
+const MONTHS={january:0,february:1,march:2,april:3,may:4,june:5,july:6,august:7,september:8,october:9,november:10,december:11,jan:0,feb:1,mar:2,apr:3,jun:5,jul:6,aug:7,sep:8,sept:8,oct:9,nov:10,dec:11};
+const extractUrl=s=>{const m=String(s||'').match(URL_RE);return m?m[0]:''};
+function cleanUrlTitle(u){try{return new URL(u.startsWith('http')?u:'https://'+u).hostname.replace(/^www\./,'')}catch(e){return u.slice(0,32)}}
+function extractAmount(s){const m=String(s||'').replace(/,/g,'').match(/(?:rs\.?|inr|₹)\s?(\d+(?:\.\d{1,2})?)|(\d+(?:\.\d{1,2})?)\s?(?:rs\.?|inr|₹|rupees?)/i);return m?parseFloat(m[1]||m[2]):null}
+function extractBillDate(s){
+ const t=String(s||'');let m=t.match(/(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})/);
+ if(m){let d=+m[1],mo=+m[2]-1,y=+m[3];if(y<100)y+=2000;if(mo>=0&&mo<12&&d>=1&&d<=31)return new Date(y,mo,d).toISOString()}
+ m=t.match(/(\d{1,2})(st|nd|rd|th)?\s+(january|february|march|april|may|june|july|august|september|october|november|december|jan|feb|mar|apr|jun|jul|aug|sep|sept|oct|nov|dec)\b/i);
+ if(m)return new Date(new Date().getFullYear(),MONTHS[m[3].toLowerCase()],+m[1]).toISOString();
+ m=t.match(/(january|february|march|april|may|june|july|august|september|october|november|december)\s+(\d{1,2})/i);
+ if(m)return new Date(new Date().getFullYear(),MONTHS[m[1].toLowerCase()],+m[2]).toISOString();
+ return null;
+}
+function detectVault(raw){
+ const s=String(raw||''),l=s.toLowerCase(),url=extractUrl(s);
+ const has=a=>a.some(w=>l.includes(w));
+ const billHit=has(BILL_WORDS),studyHit=has(STUDY_WORDS),subHit=has(SUB_WORDS),medHit=has(MED_WORDS),travelHit=has(TRAVEL_WORDS),idHit=has(ID_WORDS),warHit=has(WAR_WORDS);
+ const amt=extractAmount(s),dt=extractBillDate(s);
+ if(idHit){
+  let who='ID proof';const m=s.match(/(aadhaar|aadhar|pan card|voter id|driving licen[sc]e|passport|ration card)/i);if(m)who=cap(m[1]);
+  return{cat:'id',title:who+' (ID)',meta:'Tap photo to view · keep original safe',due:null,url};
+ }
+ if(warHit){
+  let who='Warranty';const m=s.match(/(tv|fridge|ac|washing machine|mobile|phone|laptop|microwave|fan|cooler)/i);if(m)who=cap(m[1])+' warranty';
+  let exp=null;const ym=s.match(/warranty\s*(till|until|upto|up to)\s*(.+)/i);if(ym)exp=extractBillDate(ym[2]);
+  return{cat:'warranty',title:who+(exp?' · till '+fmtDay(exp):''),meta:[exp?'Expires '+fmtDay(exp):null,'Keep bill photo'].filter(Boolean).join(' · '),due:exp,url};
+ }
+ if(subHit){
+  let who='Subscription';const m=s.match(/(netflix|prime|hotstar|spotify|youtube premium|icloud|google one|gym|jio|airtel|vi)\s*(subscription|plan|membership|recharge)?/i);if(m)who=cap(m[1])+' '+(m[2]||'plan');
+  return{cat:'sub',title:who+(amt?' · ₹'+amt:''),meta:[amt?'₹'+amt:null,dt?'Renews '+fmtDay(dt):null,url?cleanUrlTitle(url):null].filter(Boolean).join(' · '),due:dt,url};
+ }
+ if(medHit){
+  const m=s.match(/(prescription|blood test|x-?ray|scan|report)\s*(for|of)?\s*([^\n,]{0,50})?/i);
+  const title=m?cap(m[1]+(m[3]?' — '+m[3].trim():'')):'Medical record';
+  const ap=s.match(/(appointment|visit|checkup|review)\s*(on|at)?\s*(.+)/i);const adt=ap?extractBillDate(ap[3]):dt;
+  return{cat:'medical',title:title,meta:[adt?'Visit '+fmtDay(adt):null,dt&&!adt?'Dated '+fmtDay(dt):null].filter(Boolean).join(' · '),due:adt,url};
+ }
+ if(travelHit){
+  const pnr=(s.match(/pnr\s*[:\-]?\s*(\d{6,10})/i)||[])[1];
+  const m=s.match(/(flight|train|bus|hotel)\s*([A-Z0-9\- ]{0,30})?/i);
+  const title=m?cap(m[1])+' booking'+(pnr?' · PNR '+pnr:''):('Travel booking'+(pnr?' · PNR '+pnr:''));
+  return{cat:'travel',title:title,meta:[pnr?'PNR '+pnr:null,dt?'On '+fmtDay(dt):null].filter(Boolean).join(' · '),due:dt,url};
+ }
+ if(billHit||(/bill|due|pay|amount|₹/.test(l)&&dt)){
+  let who='Bill';const m=s.match(/(eb|tneb|electricity|water|gas|wifi|broadband|jio|airtel|vi|rent|emi|insurance|property tax|credit card)\s*(bill|payment|due|recharge)?/i);
+  if(m)who=cap(m[1])+' '+(m[2]||'bill');
+  return{cat:'bill',title:who+(amt?' · ₹'+amt:''),meta:[amt?'Amount ₹'+amt:null,dt?'Due '+fmtDay(dt):null,url?cleanUrlTitle(url):null].filter(Boolean).join(' · '),due:dt,url};
+ }
+ if(studyHit||/\.pdf\b|coursera|udemy|khan|ncert|class\s?\d+/.test(l)){
+  const m=s.match(/(chapter|lesson|unit)\s?(\d+)?\s*[:\-]?\s*([^\n,]{0,60})?/i);
+  const title=m?cap((m[1]+(m[2]?' '+m[2]:''))+(m[3]?' — '+m[3].trim():'')):s.split('\n')[0].slice(0,70)||'Study material';
+  return{cat:'study',title:title,meta:[url?cleanUrlTitle(url):null,/exam|test/i.test(s)?'Exam prep':null].filter(Boolean).join(' · '),due:null,url};
+ }
+ if(url){const host=cleanUrlTitle(url);const before=s.replace(URL_RE,'').trim().split('\n')[0].slice(0,70);
+  return{cat:'url',title:(before.length>8?before:host),meta:host,url,due:null}}
+ if(/bill|note|doc|file|photo|image|certificate|marksheet|aadhaar|pan card/i.test(s.slice(0,140))){
+  return{cat:'doc',title:s.split('\n')[0].slice(0,70)||'Saved file',meta:dt?'Dated '+fmtDay(dt):'',due:dt,url};
+ }
+ return null;
+}
+/* Vault part 3: list UI + undo + bulk + templates */
+function vaultRow(i){
+ const sub=[i.meta,i.due?('🔔 Due '+fmt(i.due,i.allDay)):null,i.url?esc(cleanUrlTitle(i.url)):null].filter(Boolean).join(' · ');
+ return `<div class="row" id="r-${i.id}"><button class="selchk${sel.has(i.id)?' on':''}" data-sel="${i.id}" aria-label="Select">${sel.has(i.id)?'✓':''}</button><div class="t" data-e="${i.id}">${esc(i.text)}<span class="vchip ${i.vcat}">${VCATS[i.vcat]||'Saved'}</span>${sub?`<div class="vmeta">${sub}</div>`:''}${i.img?`<img class="th" src="${i.img}" alt="Attached photo">`:''}</div>${i.url?`<button class="x" data-open="${esc(i.url)}" aria-label="Open link">↗</button>`:''}<button class="x" data-d="${i.id}" aria-label="Delete">×</button></div>`;
+}
+function vaultHTML(){
+ const all=vaultItems();
+ const list=vaultFilter==='all'?all:all.filter(j=>j.vcat===vaultFilter);
+ const cats=['bill','warranty','sub','id','medical','travel','study','url','doc'];
+ const counts={all:all.length};cats.forEach(c=>counts[c]=0);all.forEach(j=>{if(counts[j.vcat]!=null)counts[j.vcat]++});
+ const bar=`<div class="vaultbar">${['all',...cats].map(c=>`<button class="sm${vaultFilter===c?' on':''}" data-vf="${c}">${c==='all'?'All':VCATS[c]} · ${counts[c]||0}</button>`).join('')}</div>`;
+ const selbar=sel.size?`<div class="selbar"><span class="selcount">${sel.size} selected</span><button class="sm" data-bulk="done">Done</button><button class="sm" data-bulk="tomorrow">Tomorrow</button><button class="sm" data-bulk="share">Share</button><button class="sm" data-bulk="clear">Clear</button></div>`:'';
+ const body=list.length?list.map(vaultRow).join(''):'<div class="empty">Share a bill, warranty card, prescription, ticket, study PDF, link or ID photo — I will file it with a clear title.<br><br>Try: “My EB bill ₹840 due 12 Jan”.</div>';
+ return bar+selbar+body;
+}
+let undoTimer=null,undoSnap=null;
+function showUndo(msg,snap){undoSnap=snap;$('undotx').textContent=msg;$('undo').classList.add('show');clearTimeout(undoTimer);undoTimer=setTimeout(()=>{$('undo').classList.remove('show');undoSnap=null},6000)}
+function snapshot(){return JSON.parse(JSON.stringify(items))}
+function bulkDone(){if(!sel.size)return;const s=snapshot();let n=0;items.forEach(i=>{if(sel.has(i.id)&&i.type==='task'&&!i.done){setDoneSilent(i,true);n++}});sel.clear();persist();render();if(n)showUndo(`Marked ${n} done.`,s);else toast('Select tasks to mark done.')}
+function setDoneSilent(i,v){i.done=v;i.doneAt=v?Date.now():null;if(v){Notify.cancel(i);if(i.rep&&i.due){const nx={...i,id:Date.now()+Math.random().toString(36).slice(2,5),nid:newNid(),done:false,doneAt:null,due:advance(i),created:Date.now()};items.unshift(nx);Notify.schedule(nx)}}else Notify.schedule(i)}
+function bulkTomorrow(){if(!sel.size)return;const s=snapshot();const t=new Date();items.forEach(i=>{if(sel.has(i.id)&&i.due){const n=new Date(i.due);n.setFullYear(t.getFullYear(),t.getMonth(),t.getDate()+1);i.due=n.toISOString();Notify.schedule(i)}});sel.clear();persist();render();showUndo('Moved to tomorrow.',s)}
+async function bulkShare(){if(!sel.size)return;const list=[...sel].map(id=>items.find(x=>x.id===id)).filter(Boolean);const txt=list.map(i=>`• ${i.text}${i.due?' ('+fmtDay(i.due)+')':''}`).join('\n');const full='Velora list:\n'+txt;try{if(navigator.share){await navigator.share({title:'Velora list',text:full});return}}catch(e){if(e&&e.name==='AbortError')return}try{await navigator.clipboard.writeText(full);toast('Copied '+list.length+' items.')}catch(e){toast('Could not share.')}}
+function bulkClear(){if(!sel.size)return;sel.clear();persist();render();toast('Selection cleared.')}
+const TEMPLATES={'Morning routine':['Brush + water','Make bed','Plan top 3','Healthy breakfast'],'Trip pack':['ID + tickets','Charger + power bank','Medicines','2 sets dress','Toilet kit'],'Study sprint':['Chapter read 25 min','Write key notes','5 practice questions','Revise yesterday']};
+function addTemplate(name){const list=TEMPLATES[name];if(!list)return;const s=snapshot();list.forEach(t=>{items.unshift({id:uid(),type:'task',text:t,due:null,allDay:false,done:false,created:Date.now(),nid:newNid()})});persist();render();showUndo(`Added “${name}” (${list.length} tasks).`,s)}
+/* Vault part 2: save + Q&A ("what is my EB bill date") */
+function saveVault(raw,img){
+ const d=detectVault(raw);if(!d)return null;
+ const it={id:uid(),type:'vault',vcat:d.cat,text:d.title,raw:String(raw).slice(0,2000),meta:d.meta||'',due:(d.cat==='bill'||d.cat==='sub'||d.cat==='warranty'||d.cat==='medical'||d.cat==='travel')?d.due:null,allDay:true,done:false,created:Date.now(),nid:newNid(),img:img||null,url:d.url||''};
+ items.unshift(it);if(it.due)Notify.schedule(it);persist();render();return it;
+}
+const vaultItems=()=>items.filter(i=>i.type==='vault'&&!i.done);
+function vaultAnswer(raw){
+ const t=raw.trim();
+ if(/^(show|list|open|find)?\s*(my\s+|the\s+|all\s+)?(bills?|warrant(y|ies)|subscriptions?|subs?|ids?|id proofs?|medical|prescriptions?|reports?|travel|tickets?|bookings?|pnr|study(\s+material|\s+notes)?|links?|urls?|docs?|documents?|files?|vault)\b/i.test(t)){
+  const cat=/bill/i.test(t)?'bill':/warrant/i.test(t)?'warranty':/subscri|subs?\b|netflix|prime |hotstar|spotify|renewal/i.test(t)?'sub':/\bid\b|aadhaar|pan card|passport|licen/i.test(t)?'id':/medical|prescription|report|doctor|hospital/i.test(t)?'medical':/travel|ticket|booking|pnr|flight|train/i.test(t)?'travel':/study|notes?/i.test(t)?'study':/link|url/i.test(t)?'url':/doc|file/i.test(t)?'doc':'all';
+  view='vault';vaultFilter=cat;setTabs();render();
+  const all=vaultItems(),list=cat==='all'?all:all.filter(i=>i.vcat===cat);
+  if(!list.length)return say(`Your vault has no ${cat==='all'?'items yet':VCATS[cat]+'s yet'}. Share one and I will file it.`);
+  return say(`<b>${cat==='all'?'Everything in your vault':VCATS[cat]+'s'}</b> (${list.length})`+list.slice(0,6).map(i=>li(VCATS[i.vcat]+(i.due?' · due '+fmtDay(i.due):''),i.text)).join(''));
+ }
+ const m=t.match(/(?:what(?:'s| is)|when(?:'s| is)|show|tell me|give me)?\s*(?:my\s+|the\s+)?(.+?)\s*(bill|due date|date|amount|expir(y|es|ation)|renewal|link|url|pnr|prescription|report|note|notes|file|study material|warranty|subscription|ticket)\??$/i);
+ if(m){
+  const key=(m[1]+' '+m[2]).toLowerCase(),tk=toks(key);
+  const cands=vaultItems().map(i=>[score(i,tk.length?tk:[key]),i]).filter(x=>x[0]).sort((a,b)=>b[0]-a[0]);
+  if(cands.length){const[,i]=cands[0];view='vault';setTabs();render();flash(i.id);
+   return say(`<b>${esc(i.text)}</b><div class="li"><b>${VCATS[i.vcat]}</b><span>${esc((i.raw||i.text).slice(0,160))}</span></div><div class="meta">${i.vcat==='bill'&&i.due?'Due <b>'+esc(fmt(i.due,i.allDay))+'</b>. ':''}${i.meta?esc(i.meta)+'. ':''}Saved ${fmtDay(new Date(i.created))}.${i.url?` <a href="${esc(i.url)}" target="_blank" rel="noopener">Open ↗</a>`:''}</div>`)}
+  return say(`I couldn't find that in your vault. Try “show my bills”.`);
+ }
+ return null;
+}
 </script>
 </body>
 </html>
