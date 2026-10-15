@@ -7,6 +7,15 @@
     "allowMixedContent": false
   },
   "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 1200,
+      "launchAutoHide": true,
+      "backgroundColor": "#100d1a",
+      "androidSplashResourceName": "splash",
+      "showSpinner": false,
+      "splashFullScreen": true,
+      "splashImmersive": true
+    },
     "LocalNotifications": {
       "smallIcon": "ic_stat_icon",
       "iconColor": "#6A46F0",

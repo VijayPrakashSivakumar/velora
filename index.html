@@ -9,13 +9,29 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
 <link rel="apple-touch-icon" href="icon-192.png">
-<meta name="theme-color" content="#6a46f0" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#100d1a" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#100d1a" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e0b17" media="(prefers-color-scheme: dark)">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Velora">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
+<style>html{background:#100d1a}html.velora-ready{background:transparent}
+/* Velora splash — paints before first frame, kills the white flash. */
+#splash{position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;background:radial-gradient(90% 42% at 50% 30%,rgba(122,92,255,.30),transparent 62%),radial-gradient(70% 30% at 50% 78%,rgba(226,197,127,.12),transparent 60%),linear-gradient(180deg,#171130 0%,#100d1a 58%,#0b0814 100%);padding:env(safe-area-inset-top,0px) 24px env(safe-area-inset-bottom,0px);transition:opacity .45s ease,visibility .45s}
+#splash.hide{opacity:0;visibility:hidden;pointer-events:none}
+#splash .orb-xl{width:104px;height:104px;border-radius:50%;background:radial-gradient(circle at 30% 26%,#fff 0,transparent 44%),radial-gradient(circle at 68% 76%,#e2c57f,transparent 62%),linear-gradient(145deg,#9a7bff,#4630c4);box-shadow:0 0 0 1px rgba(255,255,255,.22) inset,0 18px 60px rgba(122,92,255,.5);animation:orbFloat 2.4s ease-in-out infinite;display:grid;place-items:center}
+#splash .orb-xl img{width:64px;height:64px;border-radius:18px;box-shadow:0 6px 20px rgba(0,0,0,.4)}
+#splash .vname{margin:22px 0 0;font:600 34px/1 Fraunces,Georgia,serif;letter-spacing:.02em;color:#f4efff;animation:rise .7s ease both}
+#splash .vtag{margin:8px 0 0;font:600 13px Manrope,sans-serif;letter-spacing:.22em;text-transform:uppercase;color:#b7a5ff;animation:rise .7s .1s ease both}
+#splash .loadbar{width:148px;height:5px;border-radius:99px;margin-top:30px;background:rgba(255,255,255,.14);overflow:hidden;animation:rise .7s .18s ease both}
+#splash .loadbar i{display:block;height:100%;width:38%;border-radius:99px;background:linear-gradient(90deg,#b3a1ff,#e2c57f);animation:slide 1.1s ease-in-out infinite}
+#splash .pwr{position:absolute;bottom:calc(30px + env(safe-area-inset-bottom,0px));font:600 12px Manrope,sans-serif;letter-spacing:.14em;color:rgba(240,235,250,.62);animation:rise .7s .26s ease both}
+#splash .pwr b{color:#e2c57f;font-weight:800}
+@keyframes orbFloat{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-9px) scale(1.03)}}
+@keyframes slide{0%{transform:translateX(-110%)}100%{transform:translateX(400%)}}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){#splash .orb-xl,#splash .loadbar i{animation:none}#splash .vname,#splash .vtag,#splash .loadbar,#splash .pwr{animation:none}}</style>
 <style>
 :root{color-scheme:light dark;--bg:#f5f2f8;--card:#fff;--ink:#1f1830;--mute:#7a7090;--line:#e6e0ef;--acc:#5b3df0;--acc2:#3d26b8;--on:#fff;--accsoft:#ece6ff;--gold:#9a7a24;--goldsoft:#f5ead0;--ok:#22795a;--warn:#b45309;--sh:0 12px 32px rgba(72,45,155,.10);--sh2:0 18px 48px rgba(72,45,155,.16);
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -53,6 +69,8 @@ h2{font-size:13px;margin:28px 0 10px;font-weight:800;letter-spacing:.1em;text-tr
 .tab{flex:1;min-height:44px;border:0;background:none;color:var(--mute);border-radius:15px;font:700 14px Manrope,sans-serif;cursor:pointer;transition:background .18s,color .18s}
 .tab.on{background:linear-gradient(145deg,var(--acc),var(--acc2));color:#fff;box-shadow:0 6px 18px rgba(91,61,240,.32)}
 .note{margin-top:22px;font-size:12px;color:var(--mute)}
+.pwr-foot{margin:26px 0 6px;text-align:center;font:700 11px Manrope,sans-serif;letter-spacing:.22em;text-transform:uppercase;color:var(--mute)}
+.pwr-foot b{color:var(--gold);font-weight:800}
 .dock{position:fixed;left:0;right:0;bottom:0;padding:10px 14px calc(14px + env(safe-area-inset-bottom,0px));background:linear-gradient(transparent,var(--bg) 34%)}
 .bar{max-width:520px;margin:0 auto;display:flex;gap:10px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:32px;padding:7px;box-shadow:var(--sh2)}
 .bar input{flex:1;min-width:0;height:52px;border-radius:26px;border:0;background:var(--bg);color:var(--ink);padding:0 18px;font:400 16px Manrope,sans-serif}
@@ -114,6 +132,13 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 </style>
 </head>
 <body>
+<div id="splash" role="status" aria-label="Velora is loading">
+ <div class="orb-xl"><img src="icon-192.png" alt="Velora logo" width="64" height="64" fetchpriority="high"></div>
+ <div class="vname">Velora</div>
+ <div class="vtag">Voice-first assistant</div>
+ <div class="loadbar"><i></i></div>
+ <div class="pwr">Powered by <b>Everything</b></div>
+</div>
 <main>
  <header>
   <div class="mark"><span class="gem"></span>Velora</div>
@@ -136,6 +161,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
  <h2 id="vh" style="margin-top:12px"></h2>
  <div class="card" id="list"></div>
  <p class="note">Saved on this device only. Cross-device sync comes in a later phase.</p>
+ <footer class="pwr-foot" aria-label="Powered by Everything">Powered by <b>Everything</b></footer>
 </main>
 
 <div class="dock"><div class="bar">
@@ -196,6 +222,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 </section>
 
 <script>
+try{if(!sessionStorage.getItem('vl.splash.t0'))sessionStorage.setItem('vl.splash.t0',String(Date.now()))}catch(e){}
 const K='vl.items.v1',S='vl.set.v1',$=id=>document.getElementById(id);
 const load=(k,f)=>{try{const v=JSON.parse(localStorage.getItem(k));return v==null?f:v}catch(e){return f}};
 let items=load(K,null)||load('pa.items.v1',[]),set=load(S,{lang:''}),view='upcoming',pending=null,rec=null,errMsg='';
@@ -943,7 +970,10 @@ $('speed').onclick=async()=>{
 };
 const netAll=()=>{net();speed()};
 addEventListener('online',netAll);addEventListener('offline',netAll);if(cn&&cn.addEventListener)cn.addEventListener('change',speed);
-net();speed();render();Notify.init();renderAuto();runDue();catchUp();shareIn();setInterval(runDue,3e4);document.addEventListener('visibilitychange',()=>{if(document.hidden){try{localStorage.setItem('vl.seen',String(Date.now()))}catch(e){}}else{catchUp();runDue()}});
+net();speed();render();Notify.init();renderAuto();runDue();catchUp();shareIn();hideSplash();setInterval(runDue,3e4);document.addEventListener('visibilitychange',()=>{if(document.hidden){try{localStorage.setItem('vl.seen',String(Date.now()))}catch(e){}}else{catchUp();runDue()}});
+/* Branded splash: show at least ~900ms so the logo reads, then fade. */
+function hideSplash(){const done=()=>{try{document.documentElement.classList.add('velora-ready')}catch(e){}const s=$('splash');if(!s)return;s.classList.add('hide');setTimeout(()=>{try{s.remove()}catch(e){}},600)};
+ try{const t0=+sessionStorage.getItem('vl.splash.t0')||Date.now();const wait=Math.max(0,900-(Date.now()-t0));setTimeout(done,wait)}catch(e){setTimeout(done,900)}}
 </script>
 </body>
 </html>

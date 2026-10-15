@@ -158,6 +158,13 @@ jobs:
           <?xml version="1.0" encoding="utf-8"?>
           <resources><string name="velora_widget_desc">Your top tasks at a glance</string></resources>
           VEOF
+          cat > $R/drawable/splash.xml <<'VEOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+            <item><shape android:shape="rectangle"><gradient android:angle="270" android:startColor="#171130" android:centerColor="#100D1A" android:endColor="#0B0814" android:type="linear"/></shape></item>
+            <item android:top="220dp"><bitmap android:src="@mipmap/ic_launcher" android:gravity="center_horizontal|top"/></item>
+          </layer-list>
+          VEOF
           cat > patch_manifest.py <<'VEOF'
           import re
           p = "android/app/src/main/AndroidManifest.xml"

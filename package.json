@@ -1,6 +1,6 @@
-e{
+{
   "name": "velora",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "private": true,
   "description": "Velora mobile life automation assistant",
   "scripts": {
@@ -12,6 +12,7 @@ e{
     "@capacitor/cli": "^7.4.0",
     "@capacitor/core": "^7.4.0",
     "@capacitor/local-notifications": "^7.0.0",
+    "@capacitor/splash-screen": "^7.0.0",
     "@capacitor-community/speech-recognition": "^7.0.0"
   }
 }
