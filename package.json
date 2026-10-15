@@ -4,16 +4,19 @@
   "private": true,
   "description": "Velora mobile life automation assistant",
   "scripts": {
-    "test": "node vault-test.js",
-    "prepare-www": "mkdir -p www && cp index.html www/ && cp -f manifest.webmanifest sw.js icon-192.png icon-512.png www/",
+    "test": "node vault-test.js && node test/smoke.js",
+    "prepare-www": "mkdir -p www && cp index.html www/ && cp -r js css www/ && cp -f manifest.webmanifest sw.js icon-192.png icon-512.png www/",
     "sync": "npm run prepare-www && cap sync android"
   },
   "dependencies": {
+    "@capacitor-community/speech-recognition": "^7.0.0",
     "@capacitor/android": "^7.4.0",
     "@capacitor/cli": "^7.4.0",
     "@capacitor/core": "^7.4.0",
     "@capacitor/local-notifications": "^7.0.0",
-    "@capacitor/splash-screen": "^7.0.0",
-    "@capacitor-community/speech-recognition": "^7.0.0"
+    "@capacitor/splash-screen": "^7.0.0"
+  },
+  "devDependencies": {
+    "jsdom": "^30.1.3"
   }
 }

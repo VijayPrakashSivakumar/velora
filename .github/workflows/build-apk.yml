@@ -15,9 +15,10 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
-      - name: Install and prepare web files
+      - name: Install, test and prepare web files
         run: |
           npm ci || npm install
+          npm test
           npm run prepare-www
           npx cap add android
       - name: Add Velora native code (widget)

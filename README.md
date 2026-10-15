@@ -10,7 +10,7 @@ opens offline, appears in the Share menu, and keeps your data on the phone.
    named `velora`.
 3. In the repository tap Add file > Upload files, upload ALL files in this
    folder (index.html, manifest.webmanifest, sw.js, icon-192.png,
-   icon-512.png), then Commit.
+   icon-512.png, and the whole css/ and js/ folders), then Commit.
 4. Settings > Pages > Source: "Deploy from a branch", branch `main`, folder
    `/ (root)`, Save. After about a minute your address is
    `https://YOURNAME.github.io/velora/`
@@ -72,3 +72,30 @@ and on-device speech recognition where supported.
   uses Android's alarm system.
 - Data is stored in the browser on this phone. Export a backup now and then.
 - Speech recognition in Chrome may need internet.
+
+## Project layout (for contributors)
+
+The app is split by responsibility — no single giant file:
+
+```
+index.html            app shell (markup + tiny inline splash style)
+css/app.css           all styles
+js/config.js          shared constants: env detection, categories, word lists, templates
+js/core/              state (storage + quota-safe persistence) and utils (formatting, queries)
+js/nlp/               local language understanding (repeats, tokenising, fuzzy match)
+js/intents/           command routing and intent handlers
+js/ui/                chat, home rendering, connection/splash
+js/services/          notifications and automations
+js/features/          edit sheet, focus timer, photos, backup, install/share/quick-add
+js/voice/             speech recognition + TTS
+js/vault/             Smart Vault: detection, save, Q&A, list UI, bulk actions
+js/boot.js            final startup (loads last)
+sw.js                 offline shell — pre-caches index.html, css/ and every js/ file
+test/smoke.js         jsdom boot + interaction smoke test
+vault-test.js         Vault unit tests
+```
+
+Scripts are classic (no bundler) and load from `index.html` in dependency
+order into one shared scope — keep that order when adding files, and add any
+new file to the `sw.js` precache list and `npm run prepare-www`.
+Tests: `npm test` runs both suites.

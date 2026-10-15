@@ -1,12 +1,18 @@
 const fs=require('fs');
-const html=fs.readFileSync(__dirname+'/index.html','utf8');
-const start=html.indexOf('const URL_RE=');
-const end=html.indexOf('</script>',start);
-if(start<0||end<0||end<=start){console.error('slice bounds not found');process.exit(1)}
-const slice=html.slice(start,end);
+const read=f=>fs.readFileSync(__dirname+'/'+f,'utf8');
+const config=read('js/config.js');            /* VCATS, word lists, MONTHS, TEMPLATES, URL_RE */
+let vault=read('js/vault/vault.js');          /* detectVault, saveVault, vaultAnswer, UI */
+const intents=read('js/intents/intents.js');  /* route() — used for the Q&A gate assertion */
+
+/* vault.js owns its view state internally; hoist it into this scope so the
+   assertions can observe it (mirrors how the app state is stubbed below). */
+const decl="let vaultFilter='all',sel=new Set(),selMode=false;";
+if(!vault.includes(decl)) { console.error('vault state declaration not found — update vault-test.js'); process.exit(1) }
+vault=vault.replace(decl,'/* vault view-state hoisted into test scope */');
 
 /* ---- stubs for the app environment ---- */
-var items=[],view='',vaultFilter='all',lastSay='',says=[];
+var items=[],view='',vaultFilter='all',sel=new Set(),selMode=false,lastSay='',says=[];
+global.window={};                              /* config.js probes window.Capacitor */
 const cap=s=>String(s||'').charAt(0).toUpperCase()+String(s||'').slice(1);
 const fmtDay=d=>new Date(d).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
 const esc=s=>String(s);
@@ -19,9 +25,8 @@ const setTabs=()=>{},render=()=>{},flash=()=>{},persist=()=>{},wfSyncAll=()=>{};
 const uid=()=>'t'+Math.random().toString(36).slice(2,9);
 const newNid=()=>Math.floor(Math.random()*1e6);
 const Notify={schedule(){},cancel(){},syncAll(){},state:'web'};
-const VCATS={bill:'Bill',warranty:'Warranty',sub:'Subscription',id:'ID',medical:'Medical',travel:'Travel',study:'Study',url:'Link',doc:'Doc',other:'Saved'};
 
-eval(slice);   /* exposes detectVault, vaultAnswer, saveVault, vaultItems, TEMPLATES … */
+eval(config+'\n'+vault);   /* exposes detectVault, vaultAnswer, saveVault … */
 
 let pass=0,fail=0;
 const eq=(name,got,want)=>{const ok=String(got)===String(want);
@@ -114,7 +119,7 @@ a=answers('go to gym in the morning');
 eq('go to gym NOT a vault answer',a.r,false);
 
 /* route trigger check: the same gate used before startCreate */
-const gate=new RegExp(String(html.match(/if\(\/(bill\|vault\|warrant[^\n]*?)\/i\.test\(l\)\)\{if\(vaultAnswer\(raw\)\)return\}/)[1]),'i');
+const gate=new RegExp(String(intents.match(/if\(\/(bill\|vault\|warrant[^\n]*?)\/i\.test\(l\)\)\{if\(vaultAnswer\(raw\)\)return\}/)[1]),'i');
 eq('gate fires for netflix renew',gate.test('when does my netflix renew'),true);
 eq('gate does not fire for study text',gate.test('study physics chapter 3'),false);
 eq('gate does not fire for report task',gate.test('report my progress to manager'),false);
