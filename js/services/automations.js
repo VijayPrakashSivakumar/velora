@@ -147,3 +147,5 @@ $('pend').addEventListener('click',e=>{
  if(s){const p=pend.find(x=>x.id===s.dataset.skip);if(p){const w=wfs.find(x=>x.id===p.wf);if(w)log(w,'skipped','Skipped: '+p.msg);pend=pend.filter(x=>x!==p);persistWF();renderPend();renderAuto()}}
 });
 
+
+function dailyDigest(){const due=items.filter(i=>i.type==='task'&&!i.done&&i.due&&new Date(i.due)<tomorrow());const msg=due.length?`You have ${due.length} task(s) due today.`:'No tasks due today. Plan something!';toast(msg)}
