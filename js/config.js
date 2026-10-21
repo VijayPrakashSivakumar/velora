@@ -14,6 +14,9 @@ const DEF=[
 const MODES=[[1,'Suggest'],[2,'Ask first'],[3,'Auto']],stamp=t=>new Date(t).toLocaleString([],{weekday:'short',hour:'numeric',minute:'2-digit'});
 const VOICE_LANGS=['en-US','en-IN','en-GB','ta-IN','ml-IN'];
 const VCATS={bill:'Bill',warranty:'Warranty',sub:'Subscription',id:'ID',medical:'Medical',travel:'Travel',study:'Study',url:'Link',doc:'Doc',other:'Saved'};
+/* Vault gate regex — shared between intents.js route() and vault-test.js.
+   Kept here so the test is not coupled to intents.js source-code shape. */
+var VAULT_GATE=/bill|vault|warrant|subscri|\bsub\b|renew|expir|pnr|prescription|\bticket\b|passport|aadhaar|pan card|licen[sc]e|medical|appointment|\bmy .*(date|amount|expiry|pnr|report|plan)\b/i;
 const URL_RE=/(https?:\/\/[^\s<>"']+|www\.[^\s<>"']+)/i;
 const BILL_WORDS=['eb','electricity','tneb','tangedco','water bill','water can','gas bill','gas cylinder','broadband','wifi bill','mobile bill','recharge','rent','maintenance','emi','loan','credit card','insurance','property tax','bill','invoice','receipt','payment due','due date','amount due','units consumed','consumer no'];
 const STUDY_WORDS=['chapter','lesson','syllabus','exam','hall ticket','question paper','assignment','notes','tutorial','course','subject','maths','physics','chemistry','biology','ncert','study'];

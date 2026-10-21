@@ -35,7 +35,7 @@ function route(raw,l){
   w.enabled=m[1]==='on';w.next=w.enabled?nextAt(w):null;wfSchedule(w);persistWF();renderPend();renderAuto();return say(`${esc(w.name)} is now <b>${m[1]}</b>.`);
  }
  if(/^(find|search|show me|look for)\b/.test(l)||/^(தேடு|தேடிக் கொடு|തിരയൂ|തിരഞ്ഞു തരൂ)\b/.test(raw.trim())){if(vaultAnswer(raw))return;return find(raw)}
- if(/bill|vault|warrant|subscri|\bsub\b|renew|expir|pnr|prescription|\bticket\b|passport|aadhaar|pan card|licen[sc]e|medical|appointment|\bmy .*(date|amount|expiry|pnr|report|plan)\b/i.test(l)){if(vaultAnswer(raw))return}
+ if(VAULT_GATE.test(l)){if(vaultAnswer(raw))return}
  startCreate(raw);
 }
 function startCreate(raw){

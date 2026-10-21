@@ -119,7 +119,7 @@ a=answers('go to gym in the morning');
 eq('go to gym NOT a vault answer',a.r,false);
 
 /* route trigger check: the same gate used before startCreate */
-const gate=new RegExp(String(intents.match(/if\(\/(bill\|vault\|warrant[^\n]*?)\/i\.test\(l\)\)\{if\(vaultAnswer\(raw\)\)return\}/)[1]),'i');
+const gate=VAULT_GATE; /* shared gate from config.js � same one intents.js route() uses */
 eq('gate fires for netflix renew',gate.test('when does my netflix renew'),true);
 eq('gate does not fire for study text',gate.test('study physics chapter 3'),false);
 eq('gate does not fire for report task',gate.test('report my progress to manager'),false);
