@@ -11,6 +11,7 @@ function handle(raw){
  route(raw,l);
 }
 function route(raw,l){
+ if(/^repeat\b/i.test(raw)){const m=raw.match(/^repeat\s+(.+?)\s+(daily|weekly|monthly)\s*$/i);if(!m){say('Usage: repeat <task text> daily|weekly|monthly');return}const q=m[1].toLowerCase(),rep=m[2].toLowerCase();const it=items.find(i=>i.type==='task'&&!i.done&&(i.text||'').toLowerCase().includes(q));if(!it){say('No matching open task found.');return}it.rep=rep;persist();render();say(`Repeat set to ${rep} for “${esc(it.text)}”.`);return}
  if(/^search\b/i.test(raw)){const q=raw.replace(/^search\s*/i,'').trim().toLowerCase();if(!q){say('Type "search <keyword>" to find tasks, notes, or vault items.');return}const res=items.filter(i=>(i.text||'').toLowerCase().includes(q));const vres=items.filter(i=>i.type==='vault'&&(i.text||'').toLowerCase().includes(q));say(`<b>Search: "${esc(q)}"</b> — ${res.length} result(s)`+res.slice(0,8).map(i=>li(esc(i.text),i.due?fmt(i.due,i.allDay):i.type)).join(''));return}
  let m;
  if(/இன்றைய நாளை திட்டமிடு|என் நாளை திட்டமிடு|நாளை திட்டமிடு|என்னுடைய நாளை|എന്നെ ഇന്ന് പ്ലാൻ|എന്റെ ദിവസം പ്ലാൻ|ഇന്ന് പ്ലാൻ|ദിവസം ആസൂത്രണം/.test(raw))return planDay();
