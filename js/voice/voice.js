@@ -42,7 +42,7 @@ function listen(){
   return;
  }
  if(rec){rec.stop();return}
- let got='';errMsg='';rec=new SR();rec.lang=voiceLang();rec.interimResults=true;
+ let got='';errMsg='';try{rec=new SR();rec.lang=voiceLang();rec.interimResults=true;}catch(e){rec=null;st('Could not start the microphone.');return}
  rec.onstart=()=>{orb('listen');st('Listening… tap to finish')};
  rec.onresult=e=>{got=[...e.results].map(r=>r[0].transcript).join(' ');$('tr').textContent=got};
  rec.onerror=e=>{
