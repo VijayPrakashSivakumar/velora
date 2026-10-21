@@ -4,7 +4,7 @@
 function handle(raw){
  raw=raw.trim();if(!raw)return;me(raw);const l=raw.toLowerCase();
  if(pending){
-  if(/^(cancel|never ?mind|forget it|stop|no|nope)\b/.test(l)){pending=null;say('Okay, cancelled.');return}
+ if(/^(cancel|never ?mind|forget it|stop|no|nope)\b/.test(l)){pending=null;say('Okay, cancelled.');return}
   if(pending.t==='confirm'){if(/^(yes|yeah|yep|confirm|do it|ok|okay|sure|go ahead)\b/.test(l)){const p=pending;pending=null;p.run();return}pending=null}
   else if(pending.t==='when'){return answerWhen(l)}
  }
@@ -18,6 +18,8 @@ function route(raw,l){
  if(/^add (morning routine|trip pack|study sprint)( list| template)?$/.test(l)){const k=l.match(/^add (morning routine|trip pack|study sprint)/)[1];const name=Object.keys(TEMPLATES).find(x=>x.toLowerCase()===k);if(name){addTemplate(name);return say(`Added <b>${esc(name)}</b> checklist.`)}}
  if(/what can you (handle|do)|what.*automatically/.test(l))return caps();
  if(/summary|what did i (do|finish|complete)|wrap up my day/.test(l))return summary();
+  if(/\b(stats|my stats|productivity|insights|how am i doing|my progress|this week|this month)\b/.test(l))return stats();
+  if(/\b(export|save|copy)\b.*\b(vault|my vault)/.test(l))return exportVault();
  if(/\b(organi[sz]e|sort|prioriti[sz]e|rank)\b.*\b(tasks?|priority|priorities)\b/.test(l))return prioritize();
  if(/\b(move|reschedule)\b.*\b(unfinished|overdue|incomplete|pending)\b/.test(l))return moveUnfinished();
  if(/\b(clear|delete|remove)\b.*\b(completed|done|finished)\b/.test(l))return clearDone();
@@ -95,6 +97,17 @@ function find(l){
 function summary(){
  const t0=dayStart(new Date()),dn=items.filter(i=>i.done&&i.doneAt&&new Date(i.doneAt)>=t0),o=open().sort(rank),late=o.filter(isLate).length;
  say(`<b>Today so far</b><div class="li"><b>${dn.length}</b><span>completed${dn.length?': '+esc(dn.slice(0,3).map(i=>i.text).join(', ')):''}</span></div><div class="li"><b>${o.length}</b><span>still open, ${late} overdue</span></div><div class="li"><b>${focusMin(t0)}m</b><span>focused today</span></div>`+(o.length?'<div class="meta" style="margin-top:8px">Tomorrow’s top tasks</div>'+o.slice(0,3).map(i=>li(i.due?fmtDay(i.due):'Anytime',i.text)).join(''):''));
+}
+function stats(){
+  const now=new Date(),t0=dayStart(now),w0=new Date(t0);w0.setDate(w0.getDate()-(now.getDay()||7));const m0=new Date(t0);m0.setDate(1);
+  const thisWeek=items.filter(i=>i.done&&i.doneAt&&new Date(i.doneAt)>=w0);
+  const thisMonth=items.filter(i=>i.done&&i.doneAt&&new Date(i.doneAt)>=m0);
+  const weekFocus=focusMin(w0),monthFocus=focusMin(m0);
+  const openCount=open().length,lateCount=open().filter(isLate).length;
+  const vcat={};vaultItems().forEach(i=>{vcat[i.vcat]=(vcat[i.vcat]||0)+1});
+  const vlist=Object.entries(vcat).map(([k,c])=>'${VCATS[k]||k}: '+c).join(', ')||'none yet';
+  const rate=thisMonth.length?Math.round(100*thisMonth.length/(thisMonth.length+openCount)):0;
+  say('<b>Your stats</b><div class="li"><b>'+thisWeek.length+'</b><span>done this week</span></div><div class="li"><b>'+thisMonth.length+'</b><span>done this month ('+rate+'% of open+done)</span></div><div class="li"><b>'+weekFocus+'m</b><span>focused this week · '+monthFocus+'m this month</span></div><div class="li"><b>'+openCount+'</b><span>open, '+lateCount+' overdue</span></div><div class="li"><b>Vault:</b><span>'+vlist+'</span></div>');
 }
 function caps(){
  say('<b>What I can handle now</b><div class="li"><span>Add tasks, reminders, notes and ideas from your voice or typing</span></div><div class="li"><span>File bills, warranties, subscriptions, IDs, prescriptions, tickets, links and study notes into your Vault — auto-detected and titled</span></div><div class="li"><span>Answer “what is my EB bill date”, “show my subscriptions”, “my PNR” from your Vault</span></div><div class="li"><span>Plan your day, sort by priority, find saved items, write your summary</span></div><div class="li"><span>Delete with a 6-second Undo, and bulk-select many items at once</span></div><div class="li"><span>Run automations: morning briefing (with renewals), end-of-day review, overdue rollover. You choose how much each can do alone</span></div><div class="meta">Not yet: sending messages, calendar sync, cloud AI. Those need the online phases.</div>',chips(['Plan my day','Show my vault','Add morning routine list','Move my unfinished tasks']));

@@ -111,3 +111,20 @@ function vaultAnswer(raw){
  }
  return null;
 }
+
+  function exportVault(){
+  const all=vaultItems();
+  if(!all.length){say('Your vault is empty. Share a bill, ID, subscription or ticket and I will file it.');return}
+  const byCat={};
+  all.forEach(i=>{(byCat[i.vcat]||=[]).push(i)});
+  const lines=['Velora Vault Export — '+new Date().toLocaleDateString(),''];
+  Object.entries(byCat).forEach(([cat,list])=>{
+  lines.push('## '+VCATS[cat]+' ('+list.length+')');
+  list.forEach(i=>{
+  lines.push('- '+esc(i.text)+(i.due?' — due '+fmtDay(i.due,i.allDay):'')+(i.meta?' — '+esc(i.meta):'')+(i.url?' — '+esc(i.url):''));
+  });
+  lines.push('');
+  });
+  const text=lines.join('\n');
+  try{navigator.clipboard.writeText(text);say('Vault exported ('+all.length+' items) — copied to clipboard. Paste it anywhere.');}catch(e){say(text.slice(0,1200));}
+  }
