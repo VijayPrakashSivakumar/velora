@@ -12,7 +12,8 @@ function render(){
  document.title=`Velora — ${o.length} open`;
  $('date').textContent=new Date().toLocaleDateString([],{weekday:'long',month:'long',day:'numeric'});
  const due=o.filter(i=>i.due&&new Date(i.due)<tomorrow()).length;
- $('brief').textContent=o.length?`${o.length} open, ${due} due today or overdue.`:'Nothing open. Tap the orb and tell me what is next.';
+ const doneToday=items.filter(i=>i.done&&i.doneAt&&new Date(i.doneAt)>dayStart(new Date())).length;
+$('brief').textContent=o.length?`${o.length} open, ${due} due today or overdue.${doneToday?` ${doneToday} done today.`:''}`:'Nothing open. Tap the orb and tell me what is next.';
  $('top').innerHTML=o.length?o.slice(0,3).map(row).join(''):'<div class="empty">Say “plan my day” or add your first task.</div>';
  let list,title;
  if(view==='upcoming'){list=o.slice(3);title='Everything else'}
