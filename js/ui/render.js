@@ -9,6 +9,7 @@ function row(i){
 function render(){
  const h=new Date().getHours(),o=open().sort(rank);
  $('hi').textContent=h<12?'Good morning':h<18?'Good afternoon':'Good evening';
+ document.title=`Velora — ${o.length} open`;
  $('date').textContent=new Date().toLocaleDateString([],{weekday:'long',month:'long',day:'numeric'});
  const due=o.filter(i=>i.due&&new Date(i.due)<tomorrow()).length;
  $('brief').textContent=o.length?`${o.length} open, ${due} due today or overdue.`:'Nothing open. Tap the orb and tell me what is next.';
