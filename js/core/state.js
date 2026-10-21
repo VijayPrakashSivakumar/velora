@@ -4,6 +4,7 @@ try{if(!sessionStorage.getItem('vl.splash.t0'))sessionStorage.setItem('vl.splash
 const K='vl.items.v1',S='vl.set.v1',$=id=>document.getElementById(id);
 const load=(k,f)=>{try{const v=JSON.parse(localStorage.getItem(k));return v==null?f:v}catch(e){return f}};
 let items=load(K,null)||load('pa.items.v1',[]),set=load(S,{lang:''}),view='upcoming',pending=null,rec=null,errMsg='';
+if(!Array.isArray(items))items=[];if(!set||typeof set!=='object')set={lang:''};
 let nidc=0;const newNid=()=>Date.now()%2e9+(nidc++);items.forEach(i=>{if(!i.nid)i.nid=newNid()});
 let quotaNoteShown=false;
 /* Photo storage guard: images are the #1 quota killer (base64 in localStorage).

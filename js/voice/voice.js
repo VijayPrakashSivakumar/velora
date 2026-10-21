@@ -14,7 +14,7 @@ if(!hasWebSR&&!hasNativeSR){
  st('Voice is not supported in this browser or on this phone without the native plugin. Type your capture below instead.');
 }
 
-function listenNative(){
+async function listenNative(){
  if(rec){try{await NSR.stop()}catch(e){}return}
  try{
   const a=await NSR.available();if(!a.available){st('Speech recognition is not available on this phone. Type below.');return}
@@ -67,6 +67,7 @@ function listen(){
  };
  rec.onend=()=>{rec=null;orb('');$('tr').textContent='';if(got.trim()){st('Thinking…');orb('think');setTimeout(()=>{orb('');st('Tap to speak');handle(got)},350)}else if(!errMsg)st('Didn’t catch that. Tap to retry')};
  try{rec.start()}catch(e){rec=null;st('Could not start the microphone.')}
+}
 function openAI(){
  $('ov').classList.add('show');
  if(!$('chat').children.length)say('What can I do for you? Try “Remind me to call Sam tomorrow morning”.',chips(['Plan my day','What can you handle automatically?','Find everything related to my project']));

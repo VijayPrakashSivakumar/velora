@@ -3,7 +3,7 @@
 /* ---------- Automations (Phase 4) ---------- */
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,5);
 const hh=s=>{const d=new Date(),p=String(s).split(':');d.setHours(+p[0],+p[1]||0,0,0);return tm(d)};
-let auto=load('vl.auto.v1',{paused:false,ws:'09:00',we:'18:00'}),pend=load('vl.pend.v1',[]);const showHist={};
+let auto=load('vl.auto.v1',{paused:false,ws:'09:00',we:'18:00'}),pend=load('vl.pend.v1',[]);if(!auto||typeof auto!=='object')auto={paused:false,ws:'09:00',we:'18:00'};if(!Array.isArray(pend))pend=[];const showHist={};
 const hrs=()=>[...auto.ws.split(':').map(Number),...auto.we.split(':').map(Number)];
 const persistWF=()=>{try{localStorage.setItem('vl.wf.v1',JSON.stringify(wfs));localStorage.setItem('vl.auto.v1',JSON.stringify(auto));localStorage.setItem('vl.pend.v1',JSON.stringify(pend))}catch(e){}};
 function moveTo(list){list.forEach(i=>{const n=new Date(i.due),t=new Date();n.setFullYear(t.getFullYear(),t.getMonth(),t.getDate()+1);i.due=n.toISOString();Notify.schedule(i)});persist();render()}
