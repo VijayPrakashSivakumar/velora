@@ -15,12 +15,13 @@ function advance(i){
  return d.toISOString();
 }
 function setDone(i,v){
+ const before=snapshot();
  i.done=v;i.doneAt=v?Date.now():null;
  if(v){
   Notify.cancel(i);
   if(i.rep&&i.due){const nx={...i,id:Date.now()+Math.random().toString(36).slice(2,5),nid:newNid(),done:false,doneAt:null,due:advance(i),created:Date.now()};items.unshift(nx);Notify.schedule(nx);toast('Next '+REPL[i.rep].toLowerCase()+' task: '+fmt(nx.due,nx.allDay))}
  }else Notify.schedule(i);
- persist();render();
+ persist();render();if(v)showUndo(`Marked done: ${i.text.slice(0,40)}.`,before);
 }
 function flash(id){const e=$('r-'+id);if(e){e.scrollIntoView({block:'center'});e.style.outline='2px solid var(--acc)';setTimeout(()=>{e.style.outline=''},2500)}}
 function onAction(ev){
