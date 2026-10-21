@@ -11,6 +11,7 @@ function handle(raw){
  route(raw,l);
 }
 function route(raw,l){
+ if(/^search\b/i.test(raw)){const q=raw.replace(/^search\s*/i,'').trim().toLowerCase();if(!q){say('Type "search <keyword>" to find tasks, notes, or vault items.');return}const res=items.filter(i=>(i.text||'').toLowerCase().includes(q));const vres=items.filter(i=>i.type==='vault'&&(i.text||'').toLowerCase().includes(q));say(`<b>Search: "${esc(q)}"</b> — ${res.length} result(s)`+res.slice(0,8).map(i=>li(esc(i.text),i.due?fmt(i.due,i.allDay):i.type)).join(''));return}
  let m;
  if(/இன்றைய நாளை திட்டமிடு|என் நாளை திட்டமிடு|நாளை திட்டமிடு|என்னுடைய நாளை|എന്നെ ഇന്ന് പ്ലാൻ|എന്റെ ദിവസം പ്ലാൻ|ഇന്ന് പ്ലാൻ|ദിവസം ആസൂത്രണം/.test(raw))return planDay();
  if(/சுருக்கம்|இன்று நான் என்ன செய்தேன்|സംഗ്രഹം|ഇന്ന് ഞാൻ എന്തു ചെയ്തു/.test(raw))return summary();
