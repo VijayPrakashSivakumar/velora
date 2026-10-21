@@ -3,11 +3,18 @@
 /* ---------- Voice ---------- */
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
 const NSR=NATIVE?Capacitor.Plugins.SpeechRecognition:null;
-const hasTamil=s=>/[\u0B80-\u0BFF]/.test(s||'');
-const hasMalayalam=s=>/[\u0D00-\u0D7F]/.test(s||'');
-const detectScriptLang=s=>hasTamil(s)?'ta-IN':hasMalayalam(s)?'ml-IN':'';
-function voiceLang(){const s=set.lang||'';if(VOICE_LANGS.includes(s))return s;const nav=navigator.language||'en-US';return VOICE_LANGS.includes(nav)?nav:'en-US'}
-async function listenNative(){
+
+// Upfront availability checks so the user gets a clear message instead of a silent failure.
+const hasWebSR=!!(window.SpeechRecognition||window.webkitSpeechRecognition);
+const hasNativeSR=!!(NATIVE&&NSR);
+const hasMediaDevices=!!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia);
+
+// If nothing works at all, tell the user plainly and skip the whole capture path.
+if(!hasWebSR&&!hasNativeSR){
+ st('Voice is not supported in this browser or on this phone without the native plugin. Type your capture below instead.');
+}
+
+function listenNative(){
  if(rec){try{await NSR.stop()}catch(e){}return}
  try{
   const a=await NSR.available();if(!a.available){st('Speech recognition is not available on this phone. Type below.');return}
@@ -30,15 +37,36 @@ async function listenNative(){
 }
 function listen(){
  if(NATIVE&&NSR)return listenNative();
- if(!SR){st('Voice is not supported in this browser. Type below.');return}
+ if(!SR&&!hasNativeSR){
+  st('Voice is not supported in this browser. Use the native app or type your capture below instead.');
+  return;
+ }
  if(rec){rec.stop();return}
  let got='';errMsg='';rec=new SR();rec.lang=voiceLang();rec.interimResults=true;
  rec.onstart=()=>{orb('listen');st('Listening… tap to finish')};
  rec.onresult=e=>{got=[...e.results].map(r=>r[0].transcript).join(' ');$('tr').textContent=got};
- rec.onerror=e=>{errMsg=e.error==='not-allowed'?'Microphone is blocked. Allow it in browser settings or type below.':e.error==='network'?'Speech needs internet in this browser. Type below while offline.':e.error==='no-speech'?'I didn’t hear anything. Tap and try again.':'Voice failed. Type below.';st(errMsg)};
+ rec.onerror=e=>{
+  const isNotAllowed=e.error==='not-allowed'||e.error==='service-not-allowed';
+  const isNoSpeech=e.error==='no-speech';
+  const isNetwork=e.error==='network';
+  let msg;
+  if(isNotAllowed){
+   msg=hasNativeSR
+    ?'Microphone blocked by phone. Enable it in Settings → Apps → velora → Microphone, or type below.'
+    :'Microphone blocked. Allow microphone access in browser settings, or type your capture below.';
+  }else if(isNoSpeech){
+   msg=hasNativeSR
+    ?'I didn’t catch that. Tap again or type below.'
+    :'I didn’t hear anything. Tap the mic to try, or type below.';
+  }else if(isNetwork){
+   msg='Speech needs internet in this browser. Type below while offline.';
+  }else{
+   msg='Voice failed. Type below.';
+  }
+  st(msg);
+ };
  rec.onend=()=>{rec=null;orb('');$('tr').textContent='';if(got.trim()){st('Thinking…');orb('think');setTimeout(()=>{orb('');st('Tap to speak');handle(got)},350)}else if(!errMsg)st('Didn’t catch that. Tap to retry')};
  try{rec.start()}catch(e){rec=null;st('Could not start the microphone.')}
-}
 function openAI(){
  $('ov').classList.add('show');
  if(!$('chat').children.length)say('What can I do for you? Try “Remind me to call Sam tomorrow morning”.',chips(['Plan my day','What can you handle automatically?','Find everything related to my project']));
